@@ -5,7 +5,7 @@ import router from "./routes/router";
 import Loader from "./components/Loader";
 
 function App() {
-  const [isMobile, setIsMobile] = (useState < boolean) | (null > null);
+  const [isMobile, setIsMobile] = useState(null);
 
   useEffect(() => {
     const handleResize = () => {

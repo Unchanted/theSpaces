@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import { UserDataContext } from "../contexts/userContext";
-import EventsDataContext from "../contexts/EventsDataContext";
 import { useNavigate, Outlet } from "react-router-dom";
 
-import { axiosCall } from "../utils/api";
-import axios from "axios";
+// import { axiosCall } from "../utils/api";
+// import axios from "axios";
 
 export default function Protected() {
-  const [events, setEvents] = useState(null);
   const [userData, setUserData] = useState(null);
 
   const navigate = useNavigate();
@@ -40,22 +38,6 @@ export default function Protected() {
         return { status: 400 };
       }
     };
-    const fetchEvents = async () => {
-      try {
-        const response = await axiosCall("POST", "/event/p/get", true);
-        if (response.error) {
-          throw new Error("error fetching");
-        }
-        if (response && response.events) {
-          setEvents(response.events);
-        } else {
-          setEvents(null);
-        }
-      } catch (err) {
-        console.error(err);
-        throw err;
-      }
-    };
 
     const handler = async () => {
       const resp = await fetchUser();
@@ -80,17 +62,14 @@ export default function Protected() {
           }
         }
       }
-      await fetchEvents();
     };
 
-    handler();
+    // handler();
   }, []);
 
   return (
     <UserDataContext.Provider value={{ userData, setUserData }}>
-      <EventsDataContext.Provider value={{ events, setEvents }}>
-        <Outlet />
-      </EventsDataContext.Provider>
+      <Outlet />
     </UserDataContext.Provider>
   );
 }
