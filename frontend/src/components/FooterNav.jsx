@@ -26,9 +26,9 @@ export default function FooterNav() {
   return (
     <div className="h-20 fixed bottom-0 left-0 w-full flex flex-row justify-around pt-3 z-10 shadow-2xl bg-background">
       <NavbarItem Icon={Home} text="Home" to="/" />
-      <NavbarItem Icon={Calendar} text="Calendar" to="/calendar" />
-      <NavbarItem Icon={People} text="Councils" to="/councils" />
-      <NavbarItem Icon={ProfileCircle} text="Profile" to="/profile" />
+      <NavbarItem Icon={Calendar} text="Calendar" to="/" />
+      <NavbarItem Icon={People} text="Councils" to="/" />
+      <NavbarItem Icon={ProfileCircle} text="Profile" to="/" />
     </div>
   );
 }
