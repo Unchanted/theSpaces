@@ -5,6 +5,7 @@ import {
 } from "react-router-dom";
 
 import Protected from "../layouts/Protected";
+import FooterLayout from "../layouts/FooterLayout";
 
 import Login from "../pages/Login";
 import Logout from "../pages/Logout";
@@ -16,8 +17,10 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
       <Route Component={Protected}>
-        <Route index Component={Home} />
-        <Route path="space" Component={Space} />
+        <Route component={FooterLayout}>
+          <Route index Component={Home} />
+          <Route path="space" Component={Space} />
+        </Route>
       </Route>
       <Route path="login" Component={Login} />
       <Route path="logout" Component={Logout} />
