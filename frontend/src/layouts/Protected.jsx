@@ -39,30 +39,30 @@ export default function Protected() {
       }
     };
 
-    const handler = async () => {
-      const resp = await fetchUser();
-      if (resp.status === 401) {
-        const refreshToken = localStorage.getItem("refreshToken");
-        if (!refreshToken) {
-          navigate("/logout");
-        } else {
-          try {
-            const response = await axios.request({
-              baseURL: import.meta.env.VITE_APP_SERVER_ADDRESS,
-              url: "/api/v1" + `/auth/refresh-token`,
-              method: "POST",
-              data: {
-                refreshToken,
-              },
-            });
-            localStorage.setItem("accessToken", response.data.accessToken);
-            await fetchUser();
-          } catch {
-            navigate("/logout");
-          }
-        }
-      }
-    };
+    // const handler = async () => {
+    //   const resp = await fetchUser();
+    //   if (resp.status === 401) {
+    //     const refreshToken = localStorage.getItem("refreshToken");
+    //     if (!refreshToken) {
+    //       navigate("/logout");
+    //     } else {
+    //       try {
+    //         const response = await axios.request({
+    //           baseURL: import.meta.env.VITE_APP_SERVER_ADDRESS,
+    //           url: "/api/v1" + `/auth/refresh-token`,
+    //           method: "POST",
+    //           data: {
+    //             refreshToken,
+    //           },
+    //         });
+    //         localStorage.setItem("accessToken", response.data.accessToken);
+    //         await fetchUser();
+    //       } catch {
+    //         navigate("/logout");
+    //       }
+    //     }
+    //   }
+    // };
 
     // handler();
   }, []);
