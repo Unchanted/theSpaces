@@ -1,6 +1,9 @@
 #include "crow_all.h"
+#include <string>
+#include <vector>
+#include <ctime>
 
-int idCounter = 0;
+static int idCounter = 0;
 
 class User{
     private:
@@ -8,6 +11,7 @@ class User{
         std::string name;
         std::string email;
         std::string photo_url;
+        std::vector<Space*> spaces;
     public:
         User(std::string name, std::string email, std::string photo_url){
             this->id = idCounter++;
@@ -31,6 +35,10 @@ class User{
         std::string getPhotoUrl(){
             return this->photo_url;
         }
+
+        std::vector<Space*> getSpaces(){
+            return this->spaces;
+        }
 };
 
 class Message{
@@ -38,11 +46,13 @@ class Message{
         int id;
         std::string content;
         User* sender;
+        std::time_t sentTime;
     public:
-        Message(std::string content, User* sender){
+        Message(std::string content, User* sender, std::time_t sentTime){
             this->id = idCounter++;
             this->content = content;
             this->sender = sender;
+            this->sentTime = sentTime;
         }
 
         int getId(){
@@ -55,6 +65,16 @@ class Message{
 
         User* getSender(){
             return this->sender;
+        }
+
+        // Time in seconds since epoch
+        auto getSentTime(){
+            return this->sentTime;
+        }
+
+        // Time in Thu Oct 17 13:45:00 2024 Format!
+        auto getSentTimeFormatted(){
+            return std::asctime(std::localtime(&this->sentTime));
         }
 };
 
@@ -116,6 +136,15 @@ class Space{
                     break;
                 }
             }
+        }
+};
+
+class Gupshup : public Space{
+    private:
+
+    public:
+        Gupshup(std::string photo_url) : Space("Gupshup", photo_url){
+
         }
 };
 
