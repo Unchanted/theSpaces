@@ -138,15 +138,17 @@ private:
     int id;
     std::string name;
     std::string photo_url;
+    std::string description;
     std::vector<User *> members;
     std::vector<Message *> messages;
 
 public:
-    Space(std::string name, std::string photo_url)
+    Space(std::string name, std::string photo_url, std::string description)
     {
         this->id = idCounter++;
         this->name = name;
         this->photo_url = photo_url;
+        this->description = description;
     }
 
     int getId()
@@ -162,6 +164,11 @@ public:
     std::string getPhotoUrl()
     {
         return this->photo_url;
+    }
+
+    std::string getDescription()
+    {
+        return this->description;
     }
 
     std::vector<User *> getMembers()
@@ -222,6 +229,7 @@ public:
         space_json["id"] = this->id;
         space_json["name"] = this->name;
         space_json["photo_url"] = this->photo_url;
+        space_json["description"] = this->description;
         space_json["members"] = crow::json::wvalue::list();
         for (size_t i = 0; i < this->members.size(); i++)
         {
@@ -369,7 +377,8 @@ int main()
 
         std::string name = x["name"].s();
         std::string photo_url = x["photo_url"].s();
-        Space *space = new Space(name, photo_url);
+        std::string description = x["description"].s();
+        Space *space = new Space(name, photo_url, description);
         allSpaces.push_back(space);
         crow::json::wvalue y(space->to_json());
         return crow::response(y); });

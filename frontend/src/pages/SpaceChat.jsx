@@ -133,7 +133,7 @@ export default function SpaceChat() {
             )}
             <div className="max-w-3/4">
               <div className="text-sm text-gray-500 mb-1">
-                {msg.sender.id === userData.id ? "Me" : "Other"}
+                {msg.sender.id === userData.id ? "You" : msg.sender.name}
               </div>
               <div
                 className={`p-3 rounded-lg break-words ${

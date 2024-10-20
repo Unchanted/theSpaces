@@ -1,11 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { UserDataContext } from "../contexts/userContext";
 
 export default function SpaceList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSpace, setSelectedSpace] = useState(null);
   const [spaces, setSpaces] = useState([]);
   const navigate = useNavigate();
+  const { userData } = useContext(UserDataContext);
 
   const handleCardClick = (space) => {
     setSelectedSpace(space);
@@ -14,6 +17,14 @@ export default function SpaceList() {
 
   const handleJoinSpace = async () => {
     // Logic to join the space
+
+    const response = await axios.post(
+      import.meta.env.VITE_SERVER_URL + "/spaces/" + selectedSpace.id + "/join",
+      {
+        user_id: userData.id,
+      }
+    );
+    console.log(response.data);
 
     setIsModalOpen(false);
     navigate("/");
