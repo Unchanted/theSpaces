@@ -61,6 +61,11 @@ public:
         return this->spaces;
     }
 
+    void addSpace(Space *space)
+    {
+        this->spaces.push_back(space);
+    }
+
     crow::json::wvalue to_json() const
     {
         crow::json::wvalue user_json;
@@ -171,6 +176,14 @@ public:
 
     void addMember(User *user)
     {
+
+        for (User *member : this->members)
+        {
+            if (member->getId() == user->getId())
+            {
+                return;
+            }
+        }
         this->members.push_back(user);
     }
 
@@ -316,6 +329,24 @@ int main()
         crow::json::wvalue y(user->to_json());
         return crow::response(y); });
 
+    CROW_ROUTE(app, "/users/<int>/spaces")
+    ([](const crow::request &req, int user_id)
+     {
+         crow::json::wvalue spaces_json = crow::json::wvalue::list();
+
+         User *user = getUserById(user_id);
+         if (!user)
+         {
+             return crow::response(crow::status::NOT_FOUND); // Return 404 if the user is not found
+         }
+         size_t index = 0;
+         for (Space *space : user->getSpaces())
+         {
+             spaces_json[index++] = space->to_json(); // Use indexing to add to the list
+         }
+         return crow::response(spaces_json); // Create and return the response
+     });
+
     CROW_ROUTE(app, "/spaces")
     ([]()
      {
@@ -343,11 +374,61 @@ int main()
         crow::json::wvalue y(space->to_json());
         return crow::response(y); });
 
+    CROW_ROUTE(app, "/spaces/<int>")
+    ([](const crow::request &req, int space_id)
+     {
+         Space *space = getSpaceById(space_id);
+         std::cout << space << std::endl;
+         if (!space)
+         {
+             return crow::response(crow::status::NOT_FOUND); // Return 404 if the space is not found
+         }
+
+         size_t index = 0;
+
+         return crow::response(space->to_json()); // Create and return the response
+     });
+
+    CROW_ROUTE(app, "/spaces/<int>/join").methods(crow::HTTPMethod::POST)([](const crow::request &req, int space_id)
+                                                                          {
+        auto x = crow::json::load(req.body);
+        if (!x)
+            return crow::response(crow::status::BAD_REQUEST);
+
+        int userId = x["user_id"].i();
+        Space *space = getSpaceById(space_id);
+
+        if (!space)
+            return crow::response(crow::status::NOT_FOUND); // Space not found
+
+        User *user = getUserById(userId);
+
+        if (!user)
+            return crow::response(crow::status::BAD_REQUEST); // Invalid user
+
+        space->addMember(user);
+        bool isMember = false;
+        for (Space *space : user->getSpaces())
+        {
+            if (space->getId() == space_id)
+            {
+                isMember = true;
+                break;
+            }
+        }
+        if (!isMember)
+            user->addSpace(space);
+        
+        
+        crow::json::wvalue y(space->to_json());
+        return crow::response(y); });
+
     // New route to fetch messages for a specific space
     // New route to fetch messages for a specific space
     CROW_ROUTE(app, "/spaces/<int>/messages")
     ([](const crow::request &req, int space_id)
      {
+
          crow::json::wvalue messages_json = crow::json::wvalue::list();
 
          Space *space = getSpaceById(space_id);
@@ -356,6 +437,7 @@ int main()
          {
              return crow::response(crow::status::NOT_FOUND); // Return 404 if the space is not found
          }
+         
          size_t index = 0;
          for (Message *message : space->getMessages())
          {
@@ -367,28 +449,35 @@ int main()
     CROW_ROUTE(app, "/spaces/<int>/messages").methods(crow::HTTPMethod::POST)([](const crow::request &req, int space_id)
                                                                               {
         auto x = crow::json::load(req.body);
-        std::cout << "x" << x << std::endl;
         if (!x)
             return crow::response(crow::status::BAD_REQUEST);
 
         std::string content = x["content"].s();
         int userId = x["user_id"].i(); // Assuming you also want to specify the sender's user ID
 
-        std::cout << "content: " << content << std::endl;
-        std::cout << "userid: " << userId << std::endl;
 
         Space* space = getSpaceById(space_id);
         if (!space)
             return crow::response(crow::status::NOT_FOUND); // Space not found
 
-        std::cout << "space: " << space << std::endl;
 
         // Find the user by ID (you'll need to implement getUserById)
         User* sender = getUserById(userId);
         if (!sender)
             return crow::response(crow::status::BAD_REQUEST); // Invalid user
 
-        std::cout << "sender: " << sender << std::endl;
+        // check if the user is a member of the space
+        bool isMember = false;
+        for (User *member : space->getMembers())
+        {
+            if (member->getId() == sender->getId())
+            {
+                isMember = true;
+                break;
+            }
+        }
+        if (!isMember)
+            return crow::response(crow::status::BAD_REQUEST); // User is not a member of the space
 
         std::time_t sentTime = std::time(nullptr);
         Message* message = new Message(content, sender, sentTime);

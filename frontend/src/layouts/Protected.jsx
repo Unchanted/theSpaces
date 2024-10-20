@@ -19,7 +19,6 @@ export default function Protected() {
           import.meta.env.VITE_SERVER_URL + "/users"
         );
         const data = response.data;
-        console.log(data);
 
         if (!localUser) {
           navigate("/login");

@@ -1,30 +1,28 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import SpaceCard from "../components/SpaceCard";
 import CreateSpace from "../components/CreateSpace";
 import CreateSpaceIcon from "../assets/CreateSpace.svg";
 import { UserDataContext } from "../contexts/userContext";
+import axios from "axios";
 
 export default function Home() {
   const { userData } = useContext(UserDataContext);
-  const [ifSpace, setIfSpace] = useState(1);
+  const [spaces, setSpaces] = useState([]);
 
-  const spaces = [
-    {
-      dp: CreateSpaceIcon,
-      name: "Space One",
-      members: ["Member1", "Member2", "Member3", "Member4", "Member5"],
-    },
-    {
-      dp: CreateSpaceIcon,
-      name: "Space Two",
-      members: ["Member6", "Member7", "Member8", "Member9", "Member10"],
-    },
-    {
-      dp: CreateSpaceIcon,
-      name: "Space Three",
-      members: ["Member11", "Member12", "Member13", "Member14", "Member15"],
-    },
-  ];
+  useEffect(() => {
+    const fetchSpaces = async () => {
+      try {
+        const response = await axios.get(
+          import.meta.env.VITE_SERVER_URL + "/users/" + userData.id + "/spaces"
+        );
+        setSpaces(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchSpaces();
+  }, []);
 
   return (
     <div className="flex flex-col bg-background items-center justify-start h-screen gap-4 p-4">
@@ -35,10 +33,10 @@ export default function Home() {
         </h1>
       </div>
       <div className="mt-24 w-full flex flex-col items-center">
-        {ifSpace === 0 ? (
+        {spaces.length === 0 ? (
           <CreateSpace />
         ) : (
-          spaces.map((space, index) => <SpaceCard key={index} space={space} />)
+          spaces.map((space) => <SpaceCard key={space.id} space={space} />)
         )}
       </div>
     </div>

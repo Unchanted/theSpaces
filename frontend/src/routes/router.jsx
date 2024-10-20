@@ -22,15 +22,15 @@ const router = createBrowserRouter(
       <Route Component={Protected}>
         <Route Component={FooterLayout}>
           <Route index Component={Home} />
-          <Route path="spaceform" Component={SpaceForm} />
-          <Route path="spacelist" Component={SpaceList} />
+          <Route path="spaces" Component={SpaceList} />
+          <Route path="spaces/create" Component={SpaceForm} />
         </Route>
-        <Route path="spacechat" Component={SpaceChat} />
+        <Route path="spaces/:id" Component={SpaceChat} />
       </Route>
       <Route path="login" Component={Login} />
       <Route path="logout" Component={Logout} />
-    </Route>,
-  ),
+    </Route>
+  )
 );
 
 export default router;

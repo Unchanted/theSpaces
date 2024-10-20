@@ -1,57 +1,63 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef, useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft2, Send2, ArrowCircleDown } from "iconsax-react";
 import CreateSpaceIcon from "../assets/CreateSpace.svg";
 
-const chatData = [
-  {
-    id: 1,
-    sender: "other",
-    message: "Hello, how are you?",
-    dp: CreateSpaceIcon,
-  },
-  {
-    id: 2,
-    sender: "me",
-    message: "I'm good, thanks! How about you?",
-    dp: CreateSpaceIcon,
-  },
-  {
-    id: 3,
-    sender: "other",
-    message: "I'm doing well, thank you!",
-    dp: CreateSpaceIcon,
-  },
-];
-
-const spaceDetails = {
-  name: "Space Name",
-  description: "This is the description of the space.",
-  members: ["Member1", "Member2", "Member3", "Member4", "Member5"],
-  dp: CreateSpaceIcon,
-};
+import axios from "axios";
+import { UserDataContext } from "../contexts/userContext";
 
 export default function SpaceChat() {
-  const [messages, setMessages] = useState(chatData);
+  const { id } = useParams();
+  const { userData } = useContext(UserDataContext);
+  const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const chatEndRef = useRef(null);
   const chatContainerRef = useRef(null);
   const navigate = useNavigate();
 
-  const handleSendMessage = () => {
-    if (newMessage.trim()) {
-      setMessages([
-        ...messages,
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const response = await axios.get(
+          import.meta.env.VITE_SERVER_URL + "/spaces/" + id + "/messages"
+        );
+        console.log(response.data);
+        setMessages(response.data);
+      } catch (error) {
+        console.error(error);
+        if (error.response.status === 404) {
+          navigate("/");
+        } else {
+          console.error(error);
+        }
+      }
+    };
+    const intervalId = setInterval(fetchMessages, 1000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const handleSendMessage = async () => {
+    try {
+      const response = await axios.post(
+        import.meta.env.VITE_SERVER_URL + "/spaces/" + id + "/messages",
         {
-          id: messages.length + 1,
-          sender: "me",
-          message: newMessage,
-          dp: CreateSpaceIcon,
-        },
-      ]);
+          user_id: userData.id,
+          content: newMessage,
+        }
+      );
+      console.log(response.data);
+      // setMessages(response.data);
       setNewMessage("");
+    } catch (error) {
+      console.error(error);
+      if (error.response.status === 404) {
+        navigate("/");
+      } else {
+        console.error(error);
+      }
     }
   };
 
@@ -112,32 +118,36 @@ export default function SpaceChat() {
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`flex ${msg.sender === "me" ? "justify-end ml-6" : "justify-start mr-6"} mb-4`}
+            className={`flex ${
+              msg.sender.id === userData.id
+                ? "justify-end ml-6"
+                : "justify-start mr-6"
+            } mb-4`}
           >
-            {msg.sender !== "me" && (
+            {msg.sender.id !== userData.id && (
               <img
-                src={msg.dp}
+                src={msg.sender.photo_url}
                 alt="Sender DP"
                 className="w-10 h-10 rounded-full object-cover mr-2"
               />
             )}
             <div className="max-w-3/4">
               <div className="text-sm text-gray-500 mb-1">
-                {msg.sender === "me" ? "Me" : "Other"}
+                {msg.sender.id === userData.id ? "Me" : "Other"}
               </div>
               <div
                 className={`p-3 rounded-lg break-words ${
-                  msg.sender === "me"
+                  msg.sender.id === userData.id
                     ? "bg-accent text-textBlack"
                     : "bg-secondary text-textBlack"
                 }`}
               >
-                {msg.message}
+                {msg.content}
               </div>
             </div>
-            {msg.sender === "me" && (
+            {msg.sender.id === userData.id && (
               <img
-                src={msg.dp}
+                src={msg.sender.photo_url}
                 alt="Sender DP"
                 className="w-10 h-10 rounded-full object-cover ml-2"
               />

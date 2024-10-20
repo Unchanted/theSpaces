@@ -31,7 +31,7 @@ export default function SpaceForm() {
             />
             <label
               htmlFor="profilePicture"
-              className="block w-32 h-32 rounded-full border-2 border-gray-300 flex items-center justify-center cursor-pointer overflow-hidden"
+              className="w-32 h-32 rounded-full border-2 border-gray-300 flex items-center justify-center cursor-pointer overflow-hidden"
             >
               {profilePicture ? (
                 <img

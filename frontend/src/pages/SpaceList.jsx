@@ -1,34 +1,10 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import CreateSpaceIcon from "../assets/CreateSpace.svg";
-
-const spaces = [
-  {
-    id: 1,
-    name: "Space One",
-    description: "Description for Space One",
-    dp: CreateSpaceIcon,
-    members: ["Member1", "Member2", "Member3"],
-  },
-  {
-    id: 2,
-    name: "Space Two",
-    description: "Description for Space Two",
-    dp: CreateSpaceIcon,
-    members: ["Member4", "Member5", "Member6"],
-  },
-  {
-    id: 3,
-    name: "Space Three",
-    description: "Description for Space Three",
-    dp: CreateSpaceIcon,
-    members: ["Member7", "Member8", "Member9"],
-  },
-];
 
 export default function SpaceList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSpace, setSelectedSpace] = useState(null);
+  const [spaces, setSpaces] = useState([]);
   const navigate = useNavigate();
 
   const handleCardClick = (space) => {
@@ -36,15 +12,31 @@ export default function SpaceList() {
     setIsModalOpen(true);
   };
 
-  const handleJoinSpace = () => {
+  const handleJoinSpace = async () => {
     // Logic to join the space
+
     setIsModalOpen(false);
-    navigate("/spacechat");
+    navigate("/");
   };
 
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
+
+  useEffect(() => {
+    const fetchSpaces = async () => {
+      try {
+        const response = await fetch(
+          import.meta.env.VITE_SERVER_URL + "/spaces"
+        );
+        const data = await response.json();
+        setSpaces(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchSpaces();
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-start h-screen gap-4 p-4">
@@ -57,7 +49,7 @@ export default function SpaceList() {
         >
           <div className="w-1/4">
             <img
-              src={space.dp}
+              src={space.photo_url}
               alt="Space DP"
               className="w-16 h-16 rounded-full object-cover"
             />
@@ -65,7 +57,10 @@ export default function SpaceList() {
           <div className="w-3/4 pl-4">
             <h2 className="text-xl font-bold">{space.name}</h2>
             <p className="text-gray-600">
-              {space.members.slice(0, 3).join(", ")}
+              {space.members
+                .slice(0, 3)
+                .map((member) => member.name)
+                .join(", ")}
               {space.members.length > 3 ? ", ..." : ""}
             </p>
           </div>
@@ -77,7 +72,7 @@ export default function SpaceList() {
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
             <div className="flex justify-center mb-4">
               <img
-                src={selectedSpace.dp}
+                src={selectedSpace.photo_url}
                 alt="Space DP"
                 className="w-24 h-24 rounded-full object-cover"
               />
@@ -90,9 +85,9 @@ export default function SpaceList() {
             </p>
             <h3 className="text-xl font-bold mb-2">Members</h3>
             <ul className="list-disc list-inside">
-              {selectedSpace.members.map((member, index) => (
-                <li key={index} className="text-gray-800">
-                  {member}
+              {selectedSpace.members.map((member) => (
+                <li key={member.id} className="text-gray-800">
+                  {member.name}
                 </li>
               ))}
             </ul>
