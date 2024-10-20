@@ -1,4 +1,4 @@
-import { Home, Message, MessageAdd1 } from "iconsax-react";
+import { Home, Message, MessageAdd1, Box1 } from "iconsax-react";
 import { NavLink, useNavigate } from "react-router-dom";
 
 function NavbarItem({ Icon, text, to }) {
@@ -27,6 +27,7 @@ export default function FooterNav() {
   return (
     <div className="h-20 fixed bottom-0 left-0 w-full flex flex-row justify-around pt-3 z-10 shadow-2xl bg-background">
       <NavbarItem Icon={Home} text="My Spaces" to="/" />
+      <NavbarItem Icon={Box1} text="SpaceList" to="/spacelist" />
       <NavbarItem Icon={Message} text="Gupshup" to="/gupshup" />
       <button
         onClick={() => navigate("/spaceform")}

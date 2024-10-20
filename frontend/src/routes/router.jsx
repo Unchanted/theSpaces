@@ -14,6 +14,7 @@ import Home from "../pages/Home";
 
 import SpaceForm from "../pages/SpaceForm";
 import SpaceChat from "../pages/SpaceChat";
+import SpaceList from "../pages/SpaceList";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -22,13 +23,14 @@ const router = createBrowserRouter(
         <Route Component={FooterLayout}>
           <Route index Component={Home} />
           <Route path="spaceform" Component={SpaceForm} />
+          <Route path="spacelist" Component={SpaceList} />
         </Route>
         <Route path="spacechat" Component={SpaceChat} />
       </Route>
       <Route path="login" Component={Login} />
       <Route path="logout" Component={Logout} />
-    </Route>
-  )
+    </Route>,
+  ),
 );
 
 export default router;
