@@ -6,12 +6,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        foreground: "rgb(var(--color-foreground) / <alpha-value>)",
-        background: "rgb(var(--color-background) / <alpha-value>)",
-        card: "rgb(var(--color-card) / <alpha-value>)",
-        mute: "rgb(var(--color-mute) / <alpha-value>)",
-        primary: "rgb(var(--color-primary) / <alpha-value>)",
-        vitality: "rgb(var(--color-vitality) / <alpha-value>)",
+        textBlack: "#060320",
+        textWhite: "#f7f7fe",
+        background: "#f7f7fe",
+        primary: "#2e1de8",
+        secondary: "#f2c77d",
+        accent: "#a6ef5c",
       },
       fontFamily: {
         marcellus: "Marcellus",

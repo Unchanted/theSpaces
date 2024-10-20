@@ -10,7 +10,7 @@ function NavbarItem({ Icon, text, to }) {
           <Icon
             variant={isActive ? "Bold" : "Linear"}
             color={isActive ? "#B61F2D" : "#57585A"} // TODO: Pass from tailwind theme
-          />
+          />{" "}
           <span
             className={`text-xs font-marcellus ${isActive ? "text-primary" : "text-mute "}`}
           >

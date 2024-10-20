@@ -29,10 +29,11 @@ export default function Login() {
       <div className="flex flex-col w-full h-44 items-center align-middle justify-end">
         {/* <img src={EventioLogo} alt="Eventio" className="h-20 w-20" /> */}
       </div>
-      <div className="fiex justify-center items-center text-center">
+      <div className="fiex gap-4 justify-center items-center text-center">
         <p className="font-marcellus text-primary text-3xl">
           Kitna hua padh ke gaiz
-        </p>{" "}
+        </p>
+        <br></br>
         <p className="text-sm text-foreground ">By OOO</p>
       </div>
       <GoogleLogin
