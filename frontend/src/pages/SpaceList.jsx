@@ -1,11 +1,12 @@
 import { useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { UserDataContext } from "../contexts/userContext";
 
 export default function SpaceList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSpace, setSelectedSpace] = useState(null);
+  const [isMember, setIsMember] = useState(false);
   const [spaces, setSpaces] = useState([]);
   const navigate = useNavigate();
   const { userData } = useContext(UserDataContext);
@@ -13,6 +14,12 @@ export default function SpaceList() {
   const handleCardClick = (space) => {
     setSelectedSpace(space);
     setIsModalOpen(true);
+    for (let i = 0; i < space.members.length; i++) {
+      if (space.members[i].id === userData.id) {
+        setIsMember(true);
+        return;
+      }
+    }
   };
 
   const handleJoinSpace = async () => {
@@ -32,6 +39,7 @@ export default function SpaceList() {
 
   const handleModalClose = () => {
     setIsModalOpen(false);
+    setIsMember(false);
   };
 
   useEffect(() => {
@@ -109,12 +117,21 @@ export default function SpaceList() {
               >
                 Cancel
               </button>
-              <button
-                onClick={handleJoinSpace}
-                className="bg-primary text-white py-2 px-4 rounded-md hover:bg-blue-600"
-              >
-                Join Space
-              </button>
+              {!isMember ? (
+                <button
+                  onClick={handleJoinSpace}
+                  className="bg-primary text-white py-2 px-4 rounded-md hover:bg-blue-600"
+                >
+                  Join Space
+                </button>
+              ) : (
+                <Link
+                  to={`/spaces/${selectedSpace.id}`}
+                  className="bg-primary text-white py-2 px-4 rounded-md hover:bg-blue-600"
+                >
+                  Chat
+                </Link>
+              )}
             </div>
           </div>
         </div>

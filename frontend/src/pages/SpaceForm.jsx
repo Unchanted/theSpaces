@@ -1,16 +1,26 @@
-import { useState } from "react";
-
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 export default function SpaceForm() {
-  const [profilePicture, setProfilePicture] = useState(null);
+  const navigate = useNavigate();
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    const spaceName = e.target.spaceName.value;
+    const photoUrl = e.target.photoUrl.value;
+    const description = e.target.description.value;
 
-  const handleProfilePictureChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePicture(reader.result);
-      };
-      reader.readAsDataURL(file);
+    try {
+      const response = await axios.post(
+        import.meta.env.VITE_SERVER_URL + "/spaces",
+        {
+          name: spaceName,
+          photo_url: photoUrl,
+          description: description,
+        }
+      );
+      console.log(response.data);
+      navigate("/spaces");
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -18,32 +28,8 @@ export default function SpaceForm() {
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-6 rounded-lg shadow-lg w-96">
         <h2 className="text-2xl font-bold mb-4 text-gray-800">Create Space</h2>
-        <form>
-          <div className="mb-4 flex justify-center">
-            <input
-              type="file"
-              id="profilePicture"
-              name="profilePicture"
-              accept="image/*"
-              className="hidden"
-              onChange={handleProfilePictureChange}
-              required
-            />
-            <label
-              htmlFor="profilePicture"
-              className="w-32 h-32 rounded-full border-2 border-gray-300 flex items-center justify-center cursor-pointer overflow-hidden"
-            >
-              {profilePicture ? (
-                <img
-                  src={profilePicture}
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span className="text-gray-500">Upload</span>
-              )}
-            </label>
-          </div>
+        <form onSubmit={onSubmit}>
+          {/* Space Name */}
           <div className="mb-4">
             <label htmlFor="spaceName" className="block text-gray-700 mb-2">
               Name of Space
@@ -56,6 +42,22 @@ export default function SpaceForm() {
               required
             />
           </div>
+
+          {/* Photo Url */}
+          <div className="mb-4">
+            <label htmlFor="photoUrl" className="block text-gray-700 mb-2">
+              Photo URL
+            </label>
+            <input
+              type="text"
+              id="photoUrl"
+              name="photoUrl"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              required
+            />
+          </div>
+
+          {/* Description */}
           <div className="mb-4">
             <label htmlFor="description" className="block text-gray-700 mb-2">
               Description

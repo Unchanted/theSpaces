@@ -1,7 +1,6 @@
 import { useState, useContext, useEffect } from "react";
 import SpaceCard from "../components/SpaceCard";
 import CreateSpace from "../components/CreateSpace";
-import CreateSpaceIcon from "../assets/CreateSpace.svg";
 import { UserDataContext } from "../contexts/userContext";
 import axios from "axios";
 

@@ -13,6 +13,7 @@ export default function SpaceChat() {
   const [newMessage, setNewMessage] = useState("");
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [spaceDetails, setSpaceDetails] = useState({});
 
   const chatEndRef = useRef(null);
   const chatContainerRef = useRef(null);
@@ -24,7 +25,6 @@ export default function SpaceChat() {
         const response = await axios.get(
           import.meta.env.VITE_SERVER_URL + "/spaces/" + id + "/messages"
         );
-        console.log(response.data);
         setMessages(response.data);
       } catch (error) {
         console.error(error);
@@ -35,6 +35,17 @@ export default function SpaceChat() {
         }
       }
     };
+    const fetchSpaceDetails = async () => {
+      try {
+        const response = await axios.get(
+          import.meta.env.VITE_SERVER_URL + "/spaces/" + id
+        );
+        setSpaceDetails(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchSpaceDetails();
     const intervalId = setInterval(fetchMessages, 1000);
     return () => clearInterval(intervalId);
   }, []);
@@ -100,7 +111,7 @@ export default function SpaceChat() {
             onClick={handleModalOpen}
             className="flex items-center cursor-pointer"
           >
-            <h1 className="text-xl font-bold mr-2">Space Name</h1>
+            <h1 className="text-xl font-bold mr-2">{spaceDetails.name}</h1>
           </div>
         </div>
         <img
@@ -188,7 +199,7 @@ export default function SpaceChat() {
           <div className="bg-white p-6 m-8 rounded-lg shadow-lg w-full">
             <div className="flex justify-center mb-4">
               <img
-                src={spaceDetails.dp}
+                src={spaceDetails.photo_url}
                 alt="Space DP"
                 className="w-24 h-24 rounded-full object-cover"
               />
@@ -201,9 +212,9 @@ export default function SpaceChat() {
             </p>
             <h3 className="text-xl font-bold mb-2">Members</h3>
             <ul className="list-disc list-inside">
-              {spaceDetails.members.map((member, index) => (
-                <li key={index} className="text-gray-800">
-                  {member}
+              {spaceDetails.members.map((member) => (
+                <li key={member.id} className="text-gray-800">
+                  {member.name}
                 </li>
               ))}
             </ul>

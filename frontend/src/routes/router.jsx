@@ -16,6 +16,8 @@ import SpaceForm from "../pages/SpaceForm";
 import SpaceChat from "../pages/SpaceChat";
 import SpaceList from "../pages/SpaceList";
 
+import Gupshup from "../pages/Gupshup";
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
@@ -24,6 +26,7 @@ const router = createBrowserRouter(
           <Route index Component={Home} />
           <Route path="spaces" Component={SpaceList} />
           <Route path="spaces/create" Component={SpaceForm} />
+          <Route path="gupshup" Component={Gupshup} />
         </Route>
         <Route path="spaces/:id" Component={SpaceChat} />
       </Route>
