@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ArrowLeft2, Send2 } from "iconsax-react";
 import CreateSpaceIcon from "../assets/CreateSpace.svg";
 
@@ -11,6 +11,7 @@ const chatData = [
 export default function SpaceChat() {
   const [messages, setMessages] = useState(chatData);
   const [newMessage, setNewMessage] = useState("");
+  const chatEndRef = useRef(null);
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {
@@ -21,6 +22,10 @@ export default function SpaceChat() {
       setNewMessage("");
     }
   };
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   return (
     <div className="flex flex-col h-screen">
@@ -39,28 +44,30 @@ export default function SpaceChat() {
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`flex ${msg.sender === "me" ? "justify-end" : "justify-start"} mb-4`}
+            className={`flex ${msg.sender === "me" ? "justify-end ml-6" : "justify-start mr-6"} mb-4`}
           >
             <div
-              className={`p-3 rounded-lg ${msg.sender === "me" ? "bg-accent text-textBlack" : "bg-secondary text-textBlack"}`}
+              className={`p-3 rounded-lg max-w-3/4 break-words ${msg.sender === "me" ? "bg-accent text-textBlack" : "bg-secondary text-textBlack"}`}
             >
               {msg.message}
             </div>
           </div>
         ))}
+        <div ref={chatEndRef} />
       </div>
-      <div className="flex items-center p-4 bg-white fixed bottom-0 left-0 right-0">
+      <div className="flex items-center p-4 bg-white bg-opacity-70 backdrop-blur-md fixed bottom-0 left-0 right-0 z-10">
         <div className="relative flex-1">
-          <input
-            type="text"
+          <textarea
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg pr-10"
+            className="w-full p-2 border border-gray-300 rounded-lg pr-10 resize-none overflow-hidden"
             placeholder="Type your message..."
+            rows="1"
+            style={{ height: "auto" }}
           />
           <button
             onClick={handleSendMessage}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2  p-2 rounded-full"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 rounded-full"
           >
             <Send2 size="32" color="#a6ef5c" variant="Bold" />
           </button>
