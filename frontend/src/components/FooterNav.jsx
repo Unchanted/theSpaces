@@ -1,6 +1,5 @@
-import { Calendar, Home, People, ProfileCircle } from "iconsax-react";
-
-import { NavLink } from "react-router-dom";
+import { Home, Message, MessageAdd1 } from "iconsax-react";
+import { NavLink, useNavigate } from "react-router-dom";
 
 function NavbarItem({ Icon, text, to }) {
   return (
@@ -9,10 +8,10 @@ function NavbarItem({ Icon, text, to }) {
         <>
           <Icon
             variant={isActive ? "Bold" : "Linear"}
-            color={isActive ? "#B61F2D" : "#57585A"} // TODO: Pass from tailwind theme
+            color={isActive ? "#d16421" : "#d16421"} // TODO: Pass from tailwind theme
           />{" "}
           <span
-            className={`text-xs font-marcellus ${isActive ? "text-primary" : "text-mute "}`}
+            className={`text-xs ${isActive ? "text-primary" : "text-mute "}`}
           >
             {text}
           </span>
@@ -23,12 +22,19 @@ function NavbarItem({ Icon, text, to }) {
 }
 
 export default function FooterNav() {
+  const navigate = useNavigate();
+
   return (
     <div className="h-20 fixed bottom-0 left-0 w-full flex flex-row justify-around pt-3 z-10 shadow-2xl bg-background">
-      <NavbarItem Icon={Home} text="Home" to="/" />
-      <NavbarItem Icon={Calendar} text="Calendar" to="/" />
-      <NavbarItem Icon={People} text="Councils" to="/" />
-      <NavbarItem Icon={ProfileCircle} text="Profile" to="/" />
+      <NavbarItem Icon={Home} text="My Spaces" to="/" />
+      <NavbarItem Icon={Message} text="Gupshup" to="/gupshup" />
+      <button
+        onClick={() => navigate("/spaceform")}
+        className="flex flex-row gap-2 fixed items-center bottom-24 right-4 p-3 bg-primary text-white rounded-tl-full rounded-tr-full rounded-br-full shadow-lg"
+      >
+        <MessageAdd1 size="22" />
+        <p className="text-xs font-bold">New Space</p>
+      </button>
     </div>
   );
 }
