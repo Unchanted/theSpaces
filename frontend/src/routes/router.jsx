@@ -12,6 +12,7 @@ import Logout from "../pages/Logout";
 
 import Home from "../pages/Home";
 import MySpaces from "../pages/MySpaces";
+import SpaceForm from "../pages/SpaceForm";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -20,6 +21,7 @@ const router = createBrowserRouter(
         <Route component={FooterLayout}>
           <Route index Component={Home} />
           <Route path="space" Component={MySpaces} />
+          <Route path="spaceform" Component={SpaceForm} />
         </Route>
       </Route>
       <Route path="login" Component={Login} />
