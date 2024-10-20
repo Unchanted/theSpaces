@@ -11,7 +11,7 @@ import Login from "../pages/Login";
 import Logout from "../pages/Logout";
 
 import Home from "../pages/Home";
-import Space from "../pages/Space";
+import MySpaces from "../pages/MySpaces";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -19,7 +19,7 @@ const router = createBrowserRouter(
       <Route Component={Protected}>
         <Route component={FooterLayout}>
           <Route index Component={Home} />
-          <Route path="space" Component={Space} />
+          <Route path="space" Component={MySpaces} />
         </Route>
       </Route>
       <Route path="login" Component={Login} />
