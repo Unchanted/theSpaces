@@ -1,28 +1,10 @@
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 
 export default function Login() {
   const navigate = useNavigate();
-  const login = () => {
-    window.open(
-      import.meta.env.VITE_APP_SERVER_ADDRESS + "/api/v1/auth/google",
-      "_self",
-    );
-  };
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const accessTokenParam = urlParams.get("accessToken");
-    const refreshTokenParam = urlParams.get("refreshToken");
-
-    if (accessTokenParam && refreshTokenParam) {
-      localStorage.setItem("accessToken", accessTokenParam);
-      localStorage.setItem("refreshToken", refreshTokenParam);
-      window.history.replaceState(null, "", window.location.pathname);
-      navigate("/");
-    }
-  }, []);
 
   return (
     <div className="flex flex-col justify-center items-center h-screen gap-16 p-4">
@@ -37,14 +19,31 @@ export default function Login() {
         <p className="text-sm text-foreground ">By OOO</p>
       </div>
       <GoogleLogin
-        onSuccess={(credentialResponse) => {
-          console.log(credentialResponse);
+        onSuccess={async (credentialResponse) => {
+          const credential = credentialResponse.credential;
+          const decoded = jwtDecode(credential);
+          localStorage.setItem("token", JSON.stringify(decoded));
+
+          try {
+            const response = await axios.post(
+              import.meta.env.VITE_SERVER_URL + "/users",
+              {
+                email: decoded.email,
+                name: decoded.name,
+                photo_url: decoded.picture,
+              }
+            );
+            const data = response.data;
+            localStorage.setItem("user", JSON.stringify(data));
+            navigate("/");
+          } catch (error) {
+            console.error("Error: ", error);
+          }
         }}
         onError={() => {
           console.log("Login Failed");
         }}
       />
-      ;
     </div>
   );
 }

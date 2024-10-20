@@ -250,9 +250,24 @@ User *getUserById(int userId)
     return nullptr; // Return nullptr if the user is not found
 }
 
+User *getUserByEmail(std::string email)
+{
+    for (User *user : allUsers)
+    {
+        if (user->getEmail() == email)
+        {
+            return user; // Return the user if found
+        }
+    }
+    return nullptr; // Return nullptr if the user is not found
+}
+
 int main()
 {
-    crow::SimpleApp app; // Define your crow application
+    crow::App<crow::CORSHandler> app; // Define your crow application
+
+    auto &cors = app.get_middleware<crow::CORSHandler>();
+    cors.global().origin("*"); // Allow all origins
 
     // Define your endpoint at the root directory
     CROW_ROUTE(app, "/")
@@ -275,6 +290,7 @@ int main()
 
     CROW_ROUTE(app, "/users").methods(crow::HTTPMethod::POST)([](const crow::request &req)
                                                               {
+        std::cout << "hello world" << std::endl;
         auto x = crow::json::load(req.body);
         if (!x)
             return crow::response(crow::status::BAD_REQUEST);
@@ -282,6 +298,19 @@ int main()
         std::string name = x["name"].s();
         std::string email = x["email"].s();
         std::string photo_url = x["photo_url"].s();
+
+        std::cout << "name: " << name << std::endl;
+        std::cout << "email: " << email << std::endl;
+        std::cout << "photo_url: " << photo_url << std::endl;
+
+        User *existingUser = getUserByEmail(email);
+
+        if (existingUser)
+        {
+            crow::json::wvalue y(existingUser->to_json());
+            return crow::response(y);
+        }
+
         User *user = new User(name, email, photo_url);
         allUsers.push_back(user);
         crow::json::wvalue y(user->to_json());
@@ -370,5 +399,5 @@ int main()
         return crow::response(response_json); });
 
     // Set the port, set the app to run on multiple threads, and run the app
-    app.port(18080).multithreaded().run();
+    app.port(8000).multithreaded().run();
 }
