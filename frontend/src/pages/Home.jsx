@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import { useState, useContext } from "react";
 import SpaceCard from "../components/SpaceCard";
 import CreateSpace from "../components/CreateSpace";
 import CreateSpaceIcon from "../assets/CreateSpace.svg";
+import { UserDataContext } from "../contexts/userContext";
 
 export default function Home() {
-  const username = "Om Dwivedi";
+  const { userData } = useContext(UserDataContext);
   const [ifSpace, setIfSpace] = useState(1);
 
   const spaces = [
@@ -30,7 +31,7 @@ export default function Home() {
       <div className="absolute top-4 left-4">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary whitespace-pre-line">
           Welcome, {"\n"}
-          {username} to spaces!
+          {userData.name} to spaces!
         </h1>
       </div>
       <div className="mt-24 w-full flex flex-col items-center">

@@ -19,16 +19,16 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
       <Route Component={Protected}>
-        <Route component={FooterLayout}>
+        <Route Component={FooterLayout}>
           <Route index Component={Home} />
           <Route path="spaceform" Component={SpaceForm} />
-          <Route path="spacechat" Component={SpaceChat} />
         </Route>
+        <Route path="spacechat" Component={SpaceChat} />
       </Route>
       <Route path="login" Component={Login} />
       <Route path="logout" Component={Logout} />
-    </Route>,
-  ),
+    </Route>
+  )
 );
 
 export default router;
