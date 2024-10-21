@@ -305,16 +305,26 @@ int main()
         {
             all_users_json[i] = allUsers[i]->to_json();
         }
-
+    
         // Return the JSON response
-        return crow::response(all_users_json); });
+        // return crow::response(all_users_json); });
+
+        crow::response res(all_users_json);
+        res.add_header("Access-Control-Allow-Origin", "*");
+        res.add_header("Access-Control-Allow-Headers", "*");
+        return res; });
 
     CROW_ROUTE(app, "/users").methods(crow::HTTPMethod::POST)([](const crow::request &req)
                                                               {
         std::cout << "hello world" << std::endl;
         auto x = crow::json::load(req.body);
         if (!x)
-            return crow::response(crow::status::BAD_REQUEST);
+        {
+            crow::response res(crow::status::BAD_REQUEST);
+            res.add_header("Access-Control-Allow-Origin", "*");
+            res.add_header("Access-Control-Allow-Headers", "*");
+            return res;
+        }
 
         std::string name = x["name"].s();
         std::string email = x["email"].s();
@@ -329,13 +339,19 @@ int main()
         if (existingUser)
         {
             crow::json::wvalue y(existingUser->to_json());
-            return crow::response(y);
+            crow::response res(y);
+            res.add_header("Access-Control-Allow-Origin", "*");
+            res.add_header("Access-Control-Allow-Headers", "*");
+            return res;
         }
 
         User *user = new User(name, email, photo_url);
         allUsers.push_back(user);
         crow::json::wvalue y(user->to_json());
-        return crow::response(y); });
+        crow::response res(y);
+        res.add_header("Access-Control-Allow-Origin", "*");
+        res.add_header("Access-Control-Allow-Headers", "*");
+        return res; });
 
     CROW_ROUTE(app, "/users/<int>/spaces")
     ([](const crow::request &req, int user_id)
@@ -345,14 +361,20 @@ int main()
          User *user = getUserById(user_id);
          if (!user)
          {
-             return crow::response(crow::status::NOT_FOUND); // Return 404 if the user is not found
+             crow::response res(crow::status::NOT_FOUND);
+             res.add_header("Access-Control-Allow-Origin", "*");
+             res.add_header("Access-Control-Allow-Headers", "*");
+             return res; // Return 404 if the user is not found
          }
          size_t index = 0;
          for (Space *space : user->getSpaces())
          {
              spaces_json[index++] = space->to_json(); // Use indexing to add to the list
          }
-         return crow::response(spaces_json); // Create and return the response
+         crow::response res(spaces_json);
+         res.add_header("Access-Control-Allow-Origin", "*");
+         res.add_header("Access-Control-Allow-Headers", "*");
+         return res; // Create and return the response
      });
 
     CROW_ROUTE(app, "/spaces")
@@ -367,13 +389,21 @@ int main()
         }
 
         // Return the JSON response
-        return crow::response(all_spaces_json); });
+        crow::response res(all_spaces_json);
+        res.add_header("Access-Control-Allow-Origin", "*");
+        res.add_header("Access-Control-Allow-Headers", "*");
+        return res; });
 
     CROW_ROUTE(app, "/spaces").methods(crow::HTTPMethod::POST)([](const crow::request &req)
                                                                {
         auto x = crow::json::load(req.body);
         if (!x)
-            return crow::response(crow::status::BAD_REQUEST);
+        {
+            crow::response res(crow::status::BAD_REQUEST);
+            res.add_header("Access-Control-Allow-Origin", "*");
+            res.add_header("Access-Control-Allow-Headers", "*");
+            return res;
+        }
 
         std::string name = x["name"].s();
         std::string photo_url = x["photo_url"].s();
@@ -381,7 +411,10 @@ int main()
         Space *space = new Space(name, photo_url, description);
         allSpaces.push_back(space);
         crow::json::wvalue y(space->to_json());
-        return crow::response(y); });
+        crow::response res(y);
+        res.add_header("Access-Control-Allow-Origin", "*");
+        res.add_header("Access-Control-Allow-Headers", "*");
+        return res; });
 
     CROW_ROUTE(app, "/spaces/<int>")
     ([](const crow::request &req, int space_id)
@@ -390,12 +423,17 @@ int main()
          std::cout << space << std::endl;
          if (!space)
          {
-             return crow::response(crow::status::NOT_FOUND); // Return 404 if the space is not found
+             crow::response res(crow::status::NOT_FOUND);
+             res.add_header("Access-Control-Allow-Origin", "*");
+             res.add_header("Access-Control-Allow-Headers", "*");
+             return res; // Return 404 if the space is not found
          }
 
          size_t index = 0;
-
-         return crow::response(space->to_json()); // Create and return the response
+         crow::response res(space->to_json());
+         res.add_header("Access-Control-Allow-Origin", "*");
+         res.add_header("Access-Control-Allow-Headers", "*");
+         return res; // Create and return the response
      });
 
     CROW_ROUTE(app, "/spaces/<int>/join").methods(crow::HTTPMethod::POST)([](const crow::request &req, int space_id)
@@ -408,13 +446,21 @@ int main()
         Space *space = getSpaceById(space_id);
 
         if (!space)
-            return crow::response(crow::status::NOT_FOUND); // Space not found
-
+        {
+            crow::response res(crow::status::NOT_FOUND);
+            res.add_header("Access-Control-Allow-Origin", "*");
+            res.add_header("Access-Control-Allow-Headers", "*");
+            return res; // Space not found
+        }
         User *user = getUserById(userId);
 
         if (!user)
-            return crow::response(crow::status::BAD_REQUEST); // Invalid user
-
+        {
+            crow::response res(crow::status::BAD_REQUEST);
+            res.add_header("Access-Control-Allow-Origin", "*");
+            res.add_header("Access-Control-Allow-Headers", "*");
+            return res; // Invalid user
+        }
         space->addMember(user);
         bool isMember = false;
         for (Space *space : user->getSpaces())
@@ -430,7 +476,10 @@ int main()
         
         
         crow::json::wvalue y(space->to_json());
-        return crow::response(y); });
+        crow::response res(y);
+        res.add_header("Access-Control-Allow-Origin", "*");
+        res.add_header("Access-Control-Allow-Headers", "*");
+        return res; });
 
     // New route to fetch messages for a specific space
     // New route to fetch messages for a specific space
@@ -444,7 +493,10 @@ int main()
          std::cout << space << std::endl;
          if (!space)
          {
-             return crow::response(crow::status::NOT_FOUND); // Return 404 if the space is not found
+             crow::response res(crow::status::NOT_FOUND);
+             res.add_header("Access-Control-Allow-Origin", "*");
+             res.add_header("Access-Control-Allow-Headers", "*");
+             return res; // Return 404 if the space is not found
          }
          
          size_t index = 0;
@@ -452,29 +504,44 @@ int main()
          {
              messages_json[index++] = message->to_json(); // Use indexing to add to the list
          }
-         return crow::response(messages_json); // Create and return the response
+         crow::response res(messages_json);
+         res.add_header("Access-Control-Allow-Origin", "*");
+         res.add_header("Access-Control-Allow-Headers", "*");
+         return res; // Create and return the response
      });
 
     CROW_ROUTE(app, "/spaces/<int>/messages").methods(crow::HTTPMethod::POST)([](const crow::request &req, int space_id)
                                                                               {
         auto x = crow::json::load(req.body);
         if (!x)
-            return crow::response(crow::status::BAD_REQUEST);
-
+        {
+            crow::response res(crow::status::BAD_REQUEST);
+            res.add_header("Access-Control-Allow-Origin", "*");
+            res.add_header("Access-Control-Allow-Headers", "*");
+            return res;
+        }
         std::string content = x["content"].s();
         int userId = x["user_id"].i(); // Assuming you also want to specify the sender's user ID
 
 
         Space* space = getSpaceById(space_id);
         if (!space)
-            return crow::response(crow::status::NOT_FOUND); // Space not found
-
+        {
+            crow::response res(crow::status::NOT_FOUND);
+            res.add_header("Access-Control-Allow-Origin", "*");
+            res.add_header("Access-Control-Allow-Headers", "*");
+            return res; // Space not found
+        }
 
         // Find the user by ID (you'll need to implement getUserById)
         User* sender = getUserById(userId);
         if (!sender)
-            return crow::response(crow::status::BAD_REQUEST); // Invalid user
-
+        {
+            crow::response res(crow::status::BAD_REQUEST);
+            res.add_header("Access-Control-Allow-Origin", "*");
+            res.add_header("Access-Control-Allow-Headers", "*");
+            return res; // Invalid user
+        }
         // check if the user is a member of the space
         bool isMember = false;
         for (User *member : space->getMembers())
@@ -486,15 +553,22 @@ int main()
             }
         }
         if (!isMember)
-            return crow::response(crow::status::BAD_REQUEST); // User is not a member of the space
-
+        {
+            crow::response res(crow::status::BAD_REQUEST);
+            res.add_header("Access-Control-Allow-Origin", "*");
+            res.add_header("Access-Control-Allow-Headers", "*");
+            return res; // User is not a member of the space
+        }
         std::time_t sentTime = std::time(nullptr);
         Message* message = new Message(content, sender, sentTime);
         space->addMessage(message); // Add the message to the space
 
         crow::json::wvalue response_json;
         response_json["message"] = message->to_json();
-        return crow::response(response_json); });
+        crow::response res(response_json);
+        res.add_header("Access-Control-Allow-Origin", "*");
+        res.add_header("Access-Control-Allow-Headers", "*");
+        return res; });
 
     // Set the port, set the app to run on multiple threads, and run the app
     app.port(80).multithreaded().run();
