@@ -63,8 +63,8 @@ export default function SpaceList() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-start h-screen gap-4 p-4">
-      <h1 className="text-3xl font-bold text-primary mb-4">All Spaces</h1>
+    <div className="flex flex-col items-center justify-start h-screen gap-4 p-4 bg-background">
+      <h1 className="text-3xl font-bold text-primary mb-4 flex justify-start">All Spaces</h1>
       {spaces.map((space) => (
         <div
           key={space.id}
