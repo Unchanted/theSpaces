@@ -300,7 +300,7 @@ int main()
             all_users_json[i] = allUsers[i]->to_json();
         }
         crow::response res(all_users_json);
-        res.add_header("Access-Control-Allow-Origin", "*");
+        // res.add_header("Access-Control-Allow-Origin", "*");
         return res; });
 
     // GET /users/post (replacement for POST /users)
@@ -335,8 +335,8 @@ int main()
          if (!user)
          {
              crow::response res(crow::status::NOT_FOUND);
-             res.add_header("Access-Control-Allow-Origin", "*");
-             res.add_header("Access-Control-Allow-Headers", "*");
+             //  res.add_header("Access-Control-Allow-Origin", "*");
+             //  res.add_header("Access-Control-Allow-Headers", "*");
              return res; // Return 404 if the user is not found
          }
          size_t index = 0;
@@ -345,8 +345,8 @@ int main()
              spaces_json[index++] = space->to_json(); // Use indexing to add to the list
          }
          crow::response res(spaces_json);
-         res.add_header("Access-Control-Allow-Origin", "*");
-         res.add_header("Access-Control-Allow-Headers", "*");
+         //  res.add_header("Access-Control-Allow-Origin", "*");
+         //  res.add_header("Access-Control-Allow-Headers", "*");
          return res; // Create and return the response
      });
 
@@ -386,15 +386,15 @@ int main()
          if (!space)
          {
              crow::response res(crow::status::NOT_FOUND);
-             res.add_header("Access-Control-Allow-Origin", "*");
-             res.add_header("Access-Control-Allow-Headers", "*");
+             //  res.add_header("Access-Control-Allow-Origin", "*");
+             //  res.add_header("Access-Control-Allow-Headers", "*");
              return res; // Return 404 if the space is not found
          }
 
          size_t index = 0;
          crow::response res(space->to_json());
-         res.add_header("Access-Control-Allow-Origin", "*");
-         res.add_header("Access-Control-Allow-Headers", "*");
+         //  res.add_header("Access-Control-Allow-Origin", "*");
+         //  res.add_header("Access-Control-Allow-Headers", "*");
          return res; // Create and return the response
      });
 
@@ -445,8 +445,8 @@ int main()
          if (!space)
          {
              crow::response res(crow::status::NOT_FOUND);
-             res.add_header("Access-Control-Allow-Origin", "*");
-             res.add_header("Access-Control-Allow-Headers", "*");
+             //  res.add_header("Access-Control-Allow-Origin", "*");
+             //  res.add_header("Access-Control-Allow-Headers", "*");
              return res; // Return 404 if the space is not found
          }
          
@@ -456,8 +456,8 @@ int main()
              messages_json[index++] = message->to_json(); // Use indexing to add to the list
          }
          crow::response res(messages_json);
-         res.add_header("Access-Control-Allow-Origin", "*");
-         res.add_header("Access-Control-Allow-Headers", "*");
+         //  res.add_header("Access-Control-Allow-Origin", "*");
+         //  res.add_header("Access-Control-Allow-Headers", "*");
          return res; // Create and return the response
      });
 
