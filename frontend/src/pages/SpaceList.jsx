@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-// import axios from "axios";
+import axios from "axios";
 import { UserDataContext } from "../contexts/userContext";
 
 export default function SpaceList() {
@@ -25,20 +25,16 @@ export default function SpaceList() {
   const handleJoinSpace = async () => {
     // Logic to join the space
 
-    const response = await fetch(
-      import.meta.env.VITE_SERVER_URL + "/spaces/" + selectedSpace.id + "/join",
+    const response = await axios.get(
+      `${import.meta.env.VITE_SERVER_URL}/spaces/${selectedSpace.id}/join/post`,
       {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+        params: {
           user_id: userData.id,
-        }),
+        },
       }
     );
 
-    const data = await response.json();
+    const data = response.data;
 
     console.log(data);
 

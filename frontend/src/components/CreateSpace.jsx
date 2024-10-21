@@ -5,7 +5,7 @@ export default function CreateSpace() {
   const navigate = useNavigate();
 
   const handleButtonClick = () => {
-    navigate("/spaceform");
+    navigate("/spaces/create");
   };
 
   return (

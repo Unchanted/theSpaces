@@ -1,4 +1,4 @@
-// import axios from "axios";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 export default function SpaceForm() {
   const navigate = useNavigate();
@@ -9,22 +9,18 @@ export default function SpaceForm() {
     const description = e.target.description.value;
 
     try {
-      const response = await fetch(
-        import.meta.env.VITE_SERVER_URL + "/spaces",
+      const response = await axios.get(
+        import.meta.env.VITE_SERVER_URL + "/spaces/post",
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
+          params: {
             name: spaceName,
             photo_url: photoUrl,
             description: description,
-          }),
+          },
         }
       );
 
-      const data = await response.json();
+      const data = response.data;
       console.log(data);
 
       navigate("/spaces");
