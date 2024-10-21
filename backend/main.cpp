@@ -288,7 +288,12 @@ int main()
     crow::App<crow::CORSHandler> app; // Define your crow application
 
     auto &cors = app.get_middleware<crow::CORSHandler>();
-    cors.global().origin("*"); // Allow all origins
+    // cors.global().origin("*"); // Allow all origins
+    cors.global()
+        .origin("*")                                                                                           // Allow all origins
+        .methods("GET"_method, "POST"_method, "PUT"_method, "DELETE"_method, "OPTIONS"_method, "PATCH"_method) // Allow all methods
+        .headers("*")                                                                                          // Allow all headers
+        .max_age(3600);
 
     // Define your endpoint at the root directory
     CROW_ROUTE(app, "/")
