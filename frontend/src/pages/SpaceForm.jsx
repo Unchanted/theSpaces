@@ -1,7 +1,11 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { UserDataContext } from "../contexts/userContext";
+
 export default function SpaceForm() {
   const navigate = useNavigate();
+  const { userData } = useContext(UserDataContext);
   const onSubmit = async (e) => {
     e.preventDefault();
     const spaceName = e.target.spaceName.value;
@@ -23,7 +27,20 @@ export default function SpaceForm() {
       const data = response.data;
       console.log(data);
 
-      navigate("/spaces");
+      const spaceId = data.id;
+
+      const response2 = await axios.get(
+        `${import.meta.env.VITE_SERVER_URL}/spaces/${spaceId}/join/post`,
+        {
+          params: {
+            user_id: userData.id,
+          },
+        }
+      );
+      const data2 = response2.data;
+      console.log(data2);
+
+      navigate("/spaces/" + spaceId);
     } catch (error) {
       console.error(error);
     }

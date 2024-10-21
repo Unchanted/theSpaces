@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft2, Send2, ArrowCircleDown } from "iconsax-react";
-import CreateSpaceIcon from "../assets/CreateSpace.svg";
 
 import axios from "axios";
 import { UserDataContext } from "../contexts/userContext";
@@ -64,7 +63,7 @@ export default function SpaceChat() {
 
       const data = response.data;
       console.log(data);
-      
+
       // setMessages(response.data);
       setNewMessage("");
     } catch (error) {
@@ -120,7 +119,7 @@ export default function SpaceChat() {
           </div>
         </div>
         <img
-          src={CreateSpaceIcon}
+          src={spaceDetails.photo_url}
           alt="Space DP"
           className="w-10 h-10 rounded-full object-cover"
           onClick={handleModalOpen}
