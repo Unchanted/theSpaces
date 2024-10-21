@@ -382,6 +382,9 @@ int main()
          return res; // Create and return the response
      });
 
+    CROW_ROUTE(app, "/users").methods("OPTIONS"_method)([](const crow::request &req)
+                                                        { return crow::response(200); });
+
     CROW_ROUTE(app, "/spaces")
     ([]()
      {
@@ -421,6 +424,9 @@ int main()
         res.add_header("Access-Control-Allow-Headers", "*");
         return res; });
 
+    CROW_ROUTE(app, "/spaces").methods("OPTIONS"_method)([](const crow::request &req)
+                                                         { return crow::response(200); });
+
     CROW_ROUTE(app, "/spaces/<int>")
     ([](const crow::request &req, int space_id)
      {
@@ -440,6 +446,9 @@ int main()
          res.add_header("Access-Control-Allow-Headers", "*");
          return res; // Create and return the response
      });
+
+    CROW_ROUTE(app, "/spaces/<int>").methods("OPTIONS"_method)([](const crow::request &req, int)
+                                                               { return crow::response(200); });
 
     CROW_ROUTE(app, "/spaces/<int>/join").methods(crow::HTTPMethod::POST)([](const crow::request &req, int space_id)
                                                                           {
@@ -486,6 +495,9 @@ int main()
         res.add_header("Access-Control-Allow-Headers", "*");
         return res; });
 
+    CROW_ROUTE(app, "/spaces/<int>/join").methods("OPTIONS"_method)([](const crow::request &req, int space_id)
+                                                                    { return crow::response(200); });
+
     // New route to fetch messages for a specific space
     // New route to fetch messages for a specific space
     CROW_ROUTE(app, "/spaces/<int>/messages")
@@ -514,6 +526,9 @@ int main()
          res.add_header("Access-Control-Allow-Headers", "*");
          return res; // Create and return the response
      });
+
+    CROW_ROUTE(app, "/spaces/<int>/messages").methods("OPTIONS"_method)([](const crow::request &req, int space_id)
+                                                                        { return crow::response(200); });
 
     CROW_ROUTE(app, "/spaces/<int>/messages").methods(crow::HTTPMethod::POST)([](const crow::request &req, int space_id)
                                                                               {
