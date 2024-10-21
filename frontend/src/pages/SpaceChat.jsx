@@ -52,14 +52,23 @@ export default function SpaceChat() {
 
   const handleSendMessage = async () => {
     try {
-      const response = await axios.post(
+      const response = await fetch(
         import.meta.env.VITE_SERVER_URL + "/spaces/" + id + "/messages",
         {
-          user_id: userData.id,
-          content: newMessage,
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_id: userData.id,
+            content: newMessage,
+          }),
         }
       );
-      console.log(response.data);
+
+      const data = await response.json();
+      console.log(data);
+      
       // setMessages(response.data);
       setNewMessage("");
     } catch (error) {

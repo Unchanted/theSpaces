@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
-import axios from "axios";
+// import axios from "axios";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -23,15 +23,23 @@ export default function Login() {
           localStorage.setItem("token", JSON.stringify(decoded));
 
           try {
-            const response = await axios.post(
+            const response = await fetch(
               import.meta.env.VITE_SERVER_URL + "/users",
               {
-                email: decoded.email,
-                name: decoded.name,
-                photo_url: decoded.picture,
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  email: decoded.email,
+                  name: decoded.name,
+                  photo_url: decoded.picture,
+                }),
               }
             );
-            const data = response.data;
+
+            const data = await response.json();
+            
             localStorage.setItem("user", JSON.stringify(data));
             navigate("/");
           } catch (error) {
