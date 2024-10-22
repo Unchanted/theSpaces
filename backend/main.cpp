@@ -265,10 +265,10 @@ User *getUserById(int userId)
     {
         if (user->getId() == userId)
         {
-            return user; // Return the user if found
+            return user;
         }
     }
-    return nullptr; // Return nullptr if the user is not found
+    return nullptr;
 }
 
 User *getUserByEmail(std::string email)
@@ -277,10 +277,10 @@ User *getUserByEmail(std::string email)
     {
         if (user->getEmail() == email)
         {
-            return user; // Return the user if found
+            return user;
         }
     }
-    return nullptr; // Return nullptr if the user is not found
+    return nullptr;
 }
 
 int main()
@@ -303,8 +303,7 @@ int main()
         // res.add_header("Access-Control-Allow-Origin", "*");
         return res; });
 
-    // GET /users/post (replacement for POST /users)
-    CROW_ROUTE(app, "/users/post")
+        CROW_ROUTE(app, "/users/post")
     ([](const crow::request &req)
      {
         // auto x = crow::json::load(req.url_params.get("body"));
@@ -337,17 +336,17 @@ int main()
              crow::response res(crow::status::NOT_FOUND);
              //  res.add_header("Access-Control-Allow-Origin", "*");
              //  res.add_header("Access-Control-Allow-Headers", "*");
-             return res; // Return 404 if the user is not found
+             return res;
          }
          size_t index = 0;
          for (Space *space : user->getSpaces())
          {
-             spaces_json[index++] = space->to_json(); // Use indexing to add to the list
+             spaces_json[index++] = space->to_json();
          }
          crow::response res(spaces_json);
          //  res.add_header("Access-Control-Allow-Origin", "*");
          //  res.add_header("Access-Control-Allow-Headers", "*");
-         return res; // Create and return the response
+         return res; 
      });
 
     CROW_ROUTE(app, "/spaces")
@@ -360,8 +359,7 @@ int main()
         }
         return crow::response(all_spaces_json); });
 
-    // GET /spaces/post (replacement for POST /spaces)
-    CROW_ROUTE(app, "/spaces/post")
+        CROW_ROUTE(app, "/spaces/post")
     ([](const crow::request &req)
      {
         // auto x = crow::json::load(req.url_params.get("body"));
@@ -388,18 +386,17 @@ int main()
              crow::response res(crow::status::NOT_FOUND);
              //  res.add_header("Access-Control-Allow-Origin", "*");
              //  res.add_header("Access-Control-Allow-Headers", "*");
-             return res; // Return 404 if the space is not found
+             return res;
          }
 
          size_t index = 0;
          crow::response res(space->to_json());
          //  res.add_header("Access-Control-Allow-Origin", "*");
          //  res.add_header("Access-Control-Allow-Headers", "*");
-         return res; // Create and return the response
+         return res; 
      });
 
-    // GET /spaces/<int>/join/post (replacement for POST /spaces/<int>/join)
-    CROW_ROUTE(app, "/spaces/<int>/join/post")
+        CROW_ROUTE(app, "/spaces/<int>/join/post")
     ([](const crow::request &req, int space_id)
      {
         // auto x = crow::json::load(req.url_params.get("body"));
@@ -447,13 +444,13 @@ int main()
              crow::response res(crow::status::NOT_FOUND);
              //  res.add_header("Access-Control-Allow-Origin", "*");
              //  res.add_header("Access-Control-Allow-Headers", "*");
-             return res; // Return 404 if the space is not found
+             return res;
          }
          
          size_t index = 0;
          for (Message *message : space->getMessages())
          {
-             messages_json[index++] = message->to_json(); // Use indexing to add to the list
+             messages_json[index++] = message->to_json();
          }
          crow::response res(messages_json);
          //  res.add_header("Access-Control-Allow-Origin", "*");
@@ -461,8 +458,7 @@ int main()
          return res; // Create and return the response
      });
 
-    // GET /spaces/<int>/messages/post (replacement for POST /spaces/<int>/messages)
-    CROW_ROUTE(app, "/spaces/<int>/messages/post")
+        CROW_ROUTE(app, "/spaces/<int>/messages/post")
     ([](const crow::request &req, int space_id)
      {
         // auto x = crow::json::load(req.url_params.get("body"));
