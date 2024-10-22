@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
+import Logo from "../assets/Logo.png";
 import axios from "axios";
 
 export default function Login() {
@@ -9,7 +10,7 @@ export default function Login() {
   return (
     <div className="flex flex-col justify-center items-center h-screen gap-16 p-4">
       <div className="flex flex-col w-full h-44 items-center align-middle justify-end">
-        {/* <img src={EventioLogo} alt="Eventio" className="h-20 w-20" /> */}
+        <img src={Logo} alt="Eventio" className="h-48 w-48 rounded-full" />
       </div>
       <div className="fiex gap-4 justify-center items-center text-center">
         <p className="font-marcellus text-primary text-3xl">theSpaces</p>
