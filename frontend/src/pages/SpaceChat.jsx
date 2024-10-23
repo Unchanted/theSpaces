@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft2, Send2, ArrowCircleDown } from "iconsax-react";
-
 import axios from "axios";
 import { UserDataContext } from "../contexts/userContext";
 
@@ -22,7 +21,7 @@ export default function SpaceChat() {
     const fetchMessages = async () => {
       try {
         const response = await axios.get(
-          import.meta.env.VITE_SERVER_URL + "/spaces/" + id + "/messages"
+          import.meta.env.VITE_SERVER_URL + "/spaces/" + id + "/messages",
         );
         setMessages(response.data);
       } catch (error) {
@@ -37,7 +36,7 @@ export default function SpaceChat() {
     const fetchSpaceDetails = async () => {
       try {
         const response = await axios.get(
-          import.meta.env.VITE_SERVER_URL + "/spaces/" + id
+          import.meta.env.VITE_SERVER_URL + "/spaces/" + id,
         );
         setSpaceDetails(response.data);
       } catch (error) {
@@ -50,22 +49,26 @@ export default function SpaceChat() {
   }, []);
 
   const handleSendMessage = async () => {
+    const trimmedMessage = newMessage.trim();
+    if (trimmedMessage === "") {
+      return;
+    }
+
+    setNewMessage("");
+
     try {
       const response = await axios.get(
         import.meta.env.VITE_SERVER_URL + "/spaces/" + id + "/messages/post",
         {
           params: {
             user_id: userData.id,
-            content: newMessage,
+            content: trimmedMessage,
           },
-        }
+        },
       );
 
       const data = response.data;
       console.log(data);
-
-      // setMessages(response.data);
-      setNewMessage("");
     } catch (error) {
       console.error(error);
       if (error.response.status === 404) {
@@ -102,6 +105,13 @@ export default function SpaceChat() {
     setIsModalOpen(false);
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen">
       <div className="flex items-center justify-between p-4 bg-white bg-opacity-40 backdrop-blur-lg fixed top-0 left-0 right-0 z-10">
@@ -130,45 +140,52 @@ export default function SpaceChat() {
         ref={chatContainerRef}
         onScroll={handleScroll}
       >
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex ${
-              msg.sender.id === userData.id
-                ? "justify-end ml-6"
-                : "justify-start mr-6"
-            } mb-4`}
-          >
-            {msg.sender.id !== userData.id && (
-              <img
-                src={msg.sender.photo_url}
-                alt="Sender DP"
-                className="w-10 h-10 rounded-full object-cover mr-2"
-              />
-            )}
-            <div className="max-w-3/4">
-              <div className="text-sm text-gray-500 mb-1">
-                {msg.sender.id === userData.id ? "You" : msg.sender.name}
+        {messages.map((msg, index) => {
+          const isFirstMessageByUser =
+            index === 0 || messages[index - 1].sender.id !== msg.sender.id;
+          const marginClass = isFirstMessageByUser ? "mb-4" : "mb-1";
+          return (
+            <div
+              key={msg.id}
+              className={`flex ${
+                msg.sender.id === userData.id
+                  ? "justify-end ml-6"
+                  : "justify-start mr-6"
+              } ${marginClass}`}
+            >
+              {isFirstMessageByUser && msg.sender.id !== userData.id && (
+                <img
+                  src={msg.sender.photo_url}
+                  alt="Sender DP"
+                  className="w-10 h-10 rounded-full object-cover mr-2"
+                />
+              )}
+              <div className="max-w-3/4">
+                {isFirstMessageByUser && (
+                  <div className="text-sm text-gray-500 mb-1">
+                    {msg.sender.id === userData.id ? "You" : msg.sender.name}
+                  </div>
+                )}
+                <div
+                  className={`p-3 rounded-lg break-words whitespace-pre-wrap ${
+                    msg.sender.id === userData.id
+                      ? "bg-accent text-textBlack"
+                      : "bg-secondary text-textBlack"
+                  }`}
+                >
+                  {msg.content}
+                </div>
               </div>
-              <div
-                className={`p-3 rounded-lg break-words ${
-                  msg.sender.id === userData.id
-                    ? "bg-accent text-textBlack"
-                    : "bg-secondary text-textBlack"
-                }`}
-              >
-                {msg.content}
-              </div>
+              {isFirstMessageByUser && msg.sender.id === userData.id && (
+                <img
+                  src={msg.sender.photo_url}
+                  alt="Sender DP"
+                  className="w-10 h-10 rounded-full object-cover ml-2"
+                />
+              )}
             </div>
-            {msg.sender.id === userData.id && (
-              <img
-                src={msg.sender.photo_url}
-                alt="Sender DP"
-                className="w-10 h-10 rounded-full object-cover ml-2"
-              />
-            )}
-          </div>
-        ))}
+          );
+        })}
         <div ref={chatEndRef} />
       </div>
       {!isAtBottom && (
@@ -184,6 +201,7 @@ export default function SpaceChat() {
           <textarea
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
+            onKeyPress={handleKeyPress}
             className="w-full p-2 border border-gray-300 rounded-lg pr-10 resize-none overflow-hidden"
             placeholder="Type your message..."
             rows="1"
