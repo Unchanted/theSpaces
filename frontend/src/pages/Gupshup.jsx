@@ -6,7 +6,7 @@ function Gupshup() {
       <img src={CreateSpaceIcon} alt="Create Space Icon" className="mb-4" />
       <div className="flex items-center">
         <div className="p-6 text-xl text-black/80 font-bold italic ">
-          Coming soon ...
+          Coming soon...
         </div>
       </div>
     </div>
