@@ -50,7 +50,7 @@ export default function SpaceChat() {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerHeight < 500) {
+      if (window.innerHeight < 800) {
         chatContainerRef.current.scrollTop =
           chatContainerRef.current.scrollHeight;
       }
@@ -122,6 +122,20 @@ export default function SpaceChat() {
       e.preventDefault();
       handleSendMessage();
     }
+  };
+
+  const handleFocus = () => {
+    setTimeout(() => {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }, 300);
+  };
+
+  const handleBlur = () => {
+    setTimeout(() => {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }, 300);
   };
 
   return (
@@ -214,6 +228,8 @@ export default function SpaceChat() {
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
             className="w-full p-2 border border-gray-300 rounded-lg pr-10 resize-none overflow-hidden"
             placeholder="Type your message..."
             rows="1"
