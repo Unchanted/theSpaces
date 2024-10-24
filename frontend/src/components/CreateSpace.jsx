@@ -13,7 +13,7 @@ export default function CreateSpace() {
       <img src={CreateSpaceIcon} alt="Create Space Icon" className="mb-4" />
       <div className="flex items-center">
         <button
-          className="px-4 py-2 bg-primary text-textWhite font-bold rounded-3xl hover:bg-red-700"
+          className="px-4 py-2 bg-primary text-textWhite font-bold rounded-2xl hover:bg-red-700"
           onClick={handleButtonClick}
         >
           Create Your Space

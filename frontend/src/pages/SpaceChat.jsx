@@ -48,6 +48,18 @@ export default function SpaceChat() {
     return () => clearInterval(intervalId);
   }, []);
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerHeight < 500) {
+        chatContainerRef.current.scrollTop =
+          chatContainerRef.current.scrollHeight;
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const handleSendMessage = async () => {
     const trimmedMessage = newMessage.trim();
     if (trimmedMessage === "") {
