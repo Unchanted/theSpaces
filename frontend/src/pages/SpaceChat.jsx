@@ -144,7 +144,7 @@ export default function SpaceChat() {
         {messages.map((msg, index) => {
           const isFirstMessageByUser =
             index === 0 || messages[index - 1].sender.id !== msg.sender.id;
-          const marginClass = isFirstMessageByUser ? "mb-4" : "mb-1";
+          const marginClass = isFirstMessageByUser ? "mt-4" : "mt-1";
           return (
             <div
               key={msg.id}
@@ -154,12 +154,14 @@ export default function SpaceChat() {
                   : "justify-start mr-6"
               } ${marginClass}`}
             >
-              {isFirstMessageByUser && msg.sender.id !== userData.id && (
+              {isFirstMessageByUser && msg.sender.id !== userData.id ? (
                 <img
                   src={msg.sender.photo_url}
                   alt="Sender DP"
                   className="w-10 h-10 rounded-full object-cover mr-2"
                 />
+              ) : (
+                <div className="w-10 h-10 rounded-full mr-2" />
               )}
               <div className="max-w-3/4">
                 {isFirstMessageByUser && (
@@ -177,12 +179,14 @@ export default function SpaceChat() {
                   {msg.content}
                 </div>
               </div>
-              {isFirstMessageByUser && msg.sender.id === userData.id && (
+              {isFirstMessageByUser && msg.sender.id === userData.id ? (
                 <img
                   src={msg.sender.photo_url}
                   alt="Sender DP"
                   className="w-10 h-10 rounded-full object-cover ml-2"
                 />
+              ) : (
+                <div className="w-10 h-10 rounded-full ml-2" />
               )}
             </div>
           );
