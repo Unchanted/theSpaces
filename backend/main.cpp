@@ -84,38 +84,48 @@ private:
     std::string content;
     User *sender;
     std::time_t sentTime;
+    Message *previousMessage;
 
 public:
-    Message(std::string content, User *sender, std::time_t sentTime)
+    Message(std::string content, User *sender, std::time_t sentTime, Message *previousMessage = nullptr)
     {
         this->id = idCounter++;
         this->content = content;
         this->sender = sender;
         this->sentTime = sentTime;
+        this->previousMessage = previousMessage;
     }
 
-    int getId()
+    int getId() const
     {
         return this->id;
     }
 
-    std::string getContent()
+    std::string getContent() const
     {
         return this->content;
     }
 
-    User *getSender()
+    User *getSender() const
     {
         return this->sender;
     }
 
-    // Time in seconds since epoch
-    auto getSentTime()
+    Message *getPreviousMessage() const
+    {
+        return this->previousMessage;
+    }
+
+    void setPreviousMessage(Message *previousMessage)
+    {
+        this->previousMessage = previousMessage;
+    }
+
+    auto getSentTime() const
     {
         return this->sentTime;
     }
 
-    // Time in Thu Oct 17 13:45:00 2024 Format!
     auto getSentTimeFormatted() const
     {
         return std::asctime(std::localtime(&this->sentTime));
@@ -140,7 +150,7 @@ private:
     std::string photo_url;
     std::string description;
     std::vector<User *> members;
-    std::vector<Message *> messages;
+    Message *lastMessage;
 
 public:
     Space(std::string name, std::string photo_url, std::string description)
@@ -149,41 +159,49 @@ public:
         this->name = name;
         this->photo_url = photo_url;
         this->description = description;
+        this->lastMessage = nullptr;
     }
 
-    int getId()
+    int getId() const
     {
         return this->id;
     }
 
-    std::string getName()
+    std::string getName() const
     {
         return this->name;
     }
 
-    std::string getPhotoUrl()
+    std::string getPhotoUrl() const
     {
         return this->photo_url;
     }
 
-    std::string getDescription()
+    std::string getDescription() const
     {
         return this->description;
     }
 
-    std::vector<User *> getMembers()
+    std::vector<User *> getMembers() const
     {
         return this->members;
     }
 
-    std::vector<Message *> getMessages()
+    std::vector<Message *> getMessages() const
     {
-        return this->messages;
+        std::vector<Message *> messages;
+        Message *currentMessage = this->lastMessage;
+        while (currentMessage != nullptr)
+        {
+            messages.push_back(currentMessage);
+            currentMessage = currentMessage->getPreviousMessage();
+        }
+        reverse(messages.begin(), messages.end());
+        return messages;
     }
 
     void addMember(User *user)
     {
-
         for (User *member : this->members)
         {
             if (member->getId() == user->getId())
@@ -196,11 +214,11 @@ public:
 
     void removeMember(User *user)
     {
-        for (int i = 0; i < this->members.size(); i++)
+        for (auto it = this->members.begin(); it != this->members.end(); ++it)
         {
-            if (this->members[i]->getId() == user->getId())
+            if ((*it)->getId() == user->getId())
             {
-                this->members.erase(this->members.begin() + i);
+                this->members.erase(it);
                 break;
             }
         }
@@ -208,19 +226,30 @@ public:
 
     void addMessage(Message *message)
     {
-        this->messages.push_back(message);
+        message->setPreviousMessage(this->lastMessage);
+        this->lastMessage = message;
     }
 
-    void removeMessage(Message *message)
+    void removeMessage(int messageId)
     {
-        for (int i = 0; i < this->messages.size(); i++)
+        Message *current = lastMessage;
+        Message *prev = nullptr;
+
+        while (current != nullptr && current->getId() != messageId)
         {
-            if (this->messages[i]->getId() == message->getId())
-            {
-                this->messages.erase(this->messages.begin() + i);
-                break;
-            }
+            prev = current;
+            current = current->getPreviousMessage();
         }
+
+        if (current == nullptr)
+            return; // Message not found
+
+        if (prev != nullptr)
+            prev->setPreviousMessage(current->getPreviousMessage());
+        else
+            lastMessage = current->getPreviousMessage();
+
+        delete current;
     }
 
     crow::json::wvalue to_json() const
@@ -230,16 +259,13 @@ public:
         space_json["name"] = this->name;
         space_json["photo_url"] = this->photo_url;
         space_json["description"] = this->description;
+
         space_json["members"] = crow::json::wvalue::list();
         for (size_t i = 0; i < this->members.size(); i++)
         {
             space_json["members"][i] = this->members[i]->to_json();
         }
-        // space_json["messages"] = crow::json::wvalue::list();
-        // for (size_t i = 0; i < this->messages.size(); i++)
-        // {
-        //     space_json["messages"][i] = this->messages[i]->to_json();
-        // }
+
         return space_json;
     }
 };
@@ -346,7 +372,7 @@ int main()
          crow::response res(spaces_json);
          //  res.add_header("Access-Control-Allow-Origin", "*");
          //  res.add_header("Access-Control-Allow-Headers", "*");
-         return res; 
+         return res;
      });
 
     CROW_ROUTE(app, "/spaces")
@@ -393,7 +419,7 @@ int main()
          crow::response res(space->to_json());
          //  res.add_header("Access-Control-Allow-Origin", "*");
          //  res.add_header("Access-Control-Allow-Headers", "*");
-         return res; 
+         return res;
      });
 
         CROW_ROUTE(app, "/spaces/<int>/join/post")
@@ -446,7 +472,7 @@ int main()
              //  res.add_header("Access-Control-Allow-Headers", "*");
              return res;
          }
-         
+
          size_t index = 0;
          for (Message *message : space->getMessages())
          {
