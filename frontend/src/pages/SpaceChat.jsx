@@ -48,18 +48,6 @@ export default function SpaceChat() {
     return () => clearInterval(intervalId);
   }, []);
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerHeight < 800) {
-        chatContainerRef.current.scrollTop =
-          chatContainerRef.current.scrollHeight;
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   const handleSendMessage = async () => {
     const trimmedMessage = newMessage.trim();
     if (trimmedMessage === "") {
@@ -92,7 +80,9 @@ export default function SpaceChat() {
   };
 
   const scrollToBottom = () => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messages.length > 0) {
+      chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   const handleScroll = () => {
@@ -104,11 +94,10 @@ export default function SpaceChat() {
   };
 
   useEffect(() => {
-    if (isAtBottom) {
+    if (isAtBottom && messages.length > 0) {
       scrollToBottom();
     }
   }, [messages, isAtBottom]);
-
   const handleModalOpen = () => {
     setIsModalOpen(true);
   };
@@ -122,20 +111,6 @@ export default function SpaceChat() {
       e.preventDefault();
       handleSendMessage();
     }
-  };
-
-  const handleFocus = () => {
-    setTimeout(() => {
-      chatContainerRef.current.scrollTop =
-        chatContainerRef.current.scrollHeight;
-    }, 300);
-  };
-
-  const handleBlur = () => {
-    setTimeout(() => {
-      chatContainerRef.current.scrollTop =
-        chatContainerRef.current.scrollHeight;
-    }, 300);
   };
 
   return (
@@ -228,8 +203,6 @@ export default function SpaceChat() {
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
             className="w-full p-2 border border-gray-300 rounded-lg pr-10 resize-none overflow-hidden"
             placeholder="Type your message..."
             rows="1"
