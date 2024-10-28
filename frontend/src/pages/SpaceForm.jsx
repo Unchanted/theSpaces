@@ -21,7 +21,7 @@ export default function SpaceForm() {
             photo_url: photoUrl,
             description: description,
           },
-        }
+        },
       );
 
       const data = response.data;
@@ -35,7 +35,7 @@ export default function SpaceForm() {
           params: {
             user_id: userData.id,
           },
-        }
+        },
       );
       const data2 = response2.data;
       console.log(data2);
@@ -51,7 +51,7 @@ export default function SpaceForm() {
       <div className="bg-white p-6 rounded-lg shadow-lg w-96">
         <h2 className="text-2xl font-bold mb-4 text-gray-800">Create Space</h2>
         <form onSubmit={onSubmit}>
-          {/* Space Name */}
+          // Space Name
           <div className="mb-4">
             <label htmlFor="spaceName" className="block text-gray-700 mb-2">
               Name of Space
@@ -64,8 +64,7 @@ export default function SpaceForm() {
               required
             />
           </div>
-
-          {/* Photo Url */}
+          // photo url
           <div className="mb-4">
             <label htmlFor="photoUrl" className="block text-gray-700 mb-2">
               Photo URL
@@ -78,8 +77,7 @@ export default function SpaceForm() {
               required
             />
           </div>
-
-          {/* Description */}
+          // description
           <div className="mb-4">
             <label htmlFor="description" className="block text-gray-700 mb-2">
               Description
