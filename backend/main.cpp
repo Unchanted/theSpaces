@@ -1,19 +1,11 @@
-//
-//  main.cpp
-//  chatbackend
-//
-//  Created by Om Lanke on 19/10/24. and Omik Acharya :)
-//
-
 // clang++ main.cpp -pthread -I/opt/homebrew/Cellar/asio/1.30.2/include -std=c++23 -o main && ./main
 
 #include "crow_all.h"
 #include <string>
 #include <vector>
-#include <ctime>
 #include <iostream>
 
-static int idCounter = 0;
+static int idCounter = 0; // global counter fro all classes
 
 class Space;
 
@@ -41,19 +33,9 @@ public:
         return this->id;
     }
 
-    std::string getName()
-    {
-        return this->name;
-    }
-
     std::string getEmail()
     {
         return this->email;
-    }
-
-    std::string getPhotoUrl()
-    {
-        return this->photo_url;
     }
 
     std::vector<Space *> getSpaces()
@@ -83,32 +65,20 @@ private:
     int id;
     std::string content;
     User *sender;
-    std::time_t sentTime;
     Message *previousMessage;
 
 public:
-    Message(std::string content, User *sender, std::time_t sentTime, Message *previousMessage = nullptr)
+    Message(std::string content, User *sender, Message *previousMessage = nullptr)
     {
         this->id = idCounter++;
         this->content = content;
         this->sender = sender;
-        this->sentTime = sentTime;
         this->previousMessage = previousMessage;
     }
 
     int getId() const
     {
         return this->id;
-    }
-
-    std::string getContent() const
-    {
-        return this->content;
-    }
-
-    User *getSender() const
-    {
-        return this->sender;
     }
 
     Message *getPreviousMessage() const
@@ -121,23 +91,12 @@ public:
         this->previousMessage = previousMessage;
     }
 
-    auto getSentTime() const
-    {
-        return this->sentTime;
-    }
-
-    auto getSentTimeFormatted() const
-    {
-        return std::asctime(std::localtime(&this->sentTime));
-    }
-
     crow::json::wvalue to_json() const
     {
         crow::json::wvalue message_json;
         message_json["id"] = this->id;
         message_json["content"] = this->content;
         message_json["sender"] = this->sender->to_json();
-        message_json["sentTime"] = this->getSentTimeFormatted();
         return message_json;
     }
 };
@@ -165,21 +124,6 @@ public:
     int getId() const
     {
         return this->id;
-    }
-
-    std::string getName() const
-    {
-        return this->name;
-    }
-
-    std::string getPhotoUrl() const
-    {
-        return this->photo_url;
-    }
-
-    std::string getDescription() const
-    {
-        return this->description;
     }
 
     std::vector<User *> getMembers() const
@@ -212,44 +156,10 @@ public:
         this->members.push_back(user);
     }
 
-    void removeMember(User *user)
-    {
-        for (auto it = this->members.begin(); it != this->members.end(); ++it)
-        {
-            if ((*it)->getId() == user->getId())
-            {
-                this->members.erase(it);
-                break;
-            }
-        }
-    }
-
     void addMessage(Message *message)
     {
         message->setPreviousMessage(this->lastMessage);
         this->lastMessage = message;
-    }
-
-    void removeMessage(int messageId)
-    {
-        Message *current = lastMessage;
-        Message *prev = nullptr;
-
-        while (current != nullptr && current->getId() != messageId)
-        {
-            prev = current;
-            current = current->getPreviousMessage();
-        }
-
-        if (current == nullptr)
-            return; // Message not found
-
-        if (prev != nullptr)
-            prev->setPreviousMessage(current->getPreviousMessage());
-        else
-            lastMessage = current->getPreviousMessage();
-
-        delete current;
     }
 
     crow::json::wvalue to_json() const
@@ -261,7 +171,7 @@ public:
         space_json["description"] = this->description;
 
         space_json["members"] = crow::json::wvalue::list();
-        for (size_t i = 0; i < this->members.size(); i++)
+        for (int i = 0; i < this->members.size(); i++)
         {
             space_json["members"][i] = this->members[i]->to_json();
         }
@@ -317,25 +227,20 @@ int main()
     ([]()
      { return "Hello world"; });
 
-    CROW_ROUTE(app, "/users")
+    CROW_ROUTE(app, "/users") // get all users
     ([]()
      {
         crow::json::wvalue all_users_json = crow::json::wvalue::list();
-        for (size_t i = 0; i < allUsers.size(); i++)
+        for (int i = 0; i < allUsers.size(); i++)
         {
             all_users_json[i] = allUsers[i]->to_json();
         }
         crow::response res(all_users_json);
-        // res.add_header("Access-Control-Allow-Origin", "*");
         return res; });
 
-        CROW_ROUTE(app, "/users/post")
+        CROW_ROUTE(app, "/users/post") //new user
     ([](const crow::request &req)
      {
-        // auto x = crow::json::load(req.url_params.get("body"));
-        // if (!x) {
-        //     return crow::response(crow::status::BAD_REQUEST);
-        // }
         std::string name = req.url_params.get("name");
         std::string email = req.url_params.get("email");
         std::string photo_url = req.url_params.get("photo_url");
@@ -351,7 +256,7 @@ int main()
         crow::json::wvalue y(user->to_json());
         return crow::response(y); });
 
-    CROW_ROUTE(app, "/users/<int>/spaces")
+    CROW_ROUTE(app, "/users/<int>/spaces") //all spaces of user
     ([](const crow::request &req, int user_id)
      {
          crow::json::wvalue spaces_json = crow::json::wvalue::list();
@@ -360,38 +265,30 @@ int main()
          if (!user)
          {
              crow::response res(crow::status::NOT_FOUND);
-             //  res.add_header("Access-Control-Allow-Origin", "*");
-             //  res.add_header("Access-Control-Allow-Headers", "*");
              return res;
          }
-         size_t index = 0;
+         int index = 0;
          for (Space *space : user->getSpaces())
          {
              spaces_json[index++] = space->to_json();
          }
          crow::response res(spaces_json);
-         //  res.add_header("Access-Control-Allow-Origin", "*");
-         //  res.add_header("Access-Control-Allow-Headers", "*");
          return res;
      });
 
-    CROW_ROUTE(app, "/spaces")
+    CROW_ROUTE(app, "/spaces") // get all spaces
     ([]()
      {
         crow::json::wvalue all_spaces_json = crow::json::wvalue::list();
-        for (size_t i = 0; i < allSpaces.size(); i++)
+        for (int i = 0; i < allSpaces.size(); i++)
         {
             all_spaces_json[i] = allSpaces[i]->to_json();
         }
         return crow::response(all_spaces_json); });
 
-        CROW_ROUTE(app, "/spaces/post")
+        CROW_ROUTE(app, "/spaces/post") //create new space
     ([](const crow::request &req)
      {
-        // auto x = crow::json::load(req.url_params.get("body"));
-        // if (!x) {
-        //     return crow::response(crow::status::BAD_REQUEST);
-        // }
         std::string name = req.url_params.get("name");
         std::string photo_url = req.url_params.get("photo_url");
         std::string description = req.url_params.get("description");
@@ -402,7 +299,7 @@ int main()
         crow::json::wvalue y(space->to_json());
         return crow::response(y); });
 
-    CROW_ROUTE(app, "/spaces/<int>")
+    CROW_ROUTE(app, "/spaces/<int>") // details of a space
     ([](const crow::request &req, int space_id)
      {
          Space *space = getSpaceById(space_id);
@@ -410,25 +307,17 @@ int main()
          if (!space)
          {
              crow::response res(crow::status::NOT_FOUND);
-             //  res.add_header("Access-Control-Allow-Origin", "*");
-             //  res.add_header("Access-Control-Allow-Headers", "*");
              return res;
          }
 
-         size_t index = 0;
+         int index = 0;
          crow::response res(space->to_json());
-         //  res.add_header("Access-Control-Allow-Origin", "*");
-         //  res.add_header("Access-Control-Allow-Headers", "*");
          return res;
      });
 
-        CROW_ROUTE(app, "/spaces/<int>/join/post")
+        CROW_ROUTE(app, "/spaces/<int>/join/post") //join space
     ([](const crow::request &req, int space_id)
      {
-        // auto x = crow::json::load(req.url_params.get("body"));
-        // if (!x) {
-        //     return crow::response(crow::status::BAD_REQUEST);
-        // }
         std::string userIdString = req.url_params.get("user_id");
         std::cout << userIdString << std::endl;
         int userId = std::stoi(userIdString);
@@ -457,7 +346,7 @@ int main()
         crow::json::wvalue y(space->to_json());
         return crow::response(y); });
 
-    CROW_ROUTE(app, "/spaces/<int>/messages")
+    CROW_ROUTE(app, "/spaces/<int>/messages") // get space messages
     ([](const crow::request &req, int space_id)
      {
 
@@ -468,29 +357,21 @@ int main()
          if (!space)
          {
              crow::response res(crow::status::NOT_FOUND);
-             //  res.add_header("Access-Control-Allow-Origin", "*");
-             //  res.add_header("Access-Control-Allow-Headers", "*");
              return res;
          }
 
-         size_t index = 0;
+         int index = 0;
          for (Message *message : space->getMessages())
          {
              messages_json[index++] = message->to_json();
          }
          crow::response res(messages_json);
-         //  res.add_header("Access-Control-Allow-Origin", "*");
-         //  res.add_header("Access-Control-Allow-Headers", "*");
-         return res; // Create and return the response
+         return res;
      });
 
-        CROW_ROUTE(app, "/spaces/<int>/messages/post")
+        CROW_ROUTE(app, "/spaces/<int>/messages/post") //new message
     ([](const crow::request &req, int space_id)
      {
-        // auto x = crow::json::load(req.url_params.get("body"));
-        // if (!x) {
-        //     return crow::response(crow::status::BAD_REQUEST);
-        // }
         std::string content = req.url_params.get("content");
         std::string userIdString = req.url_params.get("user_id");
         int userId = std::stoi(userIdString);
@@ -513,8 +394,7 @@ int main()
         {
             return crow::response(crow::status::BAD_REQUEST);
         }
-        std::time_t sentTime = std::time(nullptr);
-        Message* message = new Message(content, sender, sentTime);
+        Message* message = new Message(content, sender);
         space->addMessage(message);
         crow::json::wvalue response_json;
         response_json["message"] = message->to_json();
