@@ -10,10 +10,13 @@ export default function SpaceChat() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [isAtBottom, setIsAtBottom] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [state, setState] = useState({
+    isModalOpen: false,
+    isDeleteModalOpen: false,
+    messageToDelete: null,
+    visibleTrash: null,
+  });
   const [spaceDetails, setSpaceDetails] = useState({});
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [messageToDelete, setMessageToDelete] = useState(null);
 
   const chatEndRef = useRef(null);
   const chatContainerRef = useRef(null);
@@ -102,11 +105,11 @@ export default function SpaceChat() {
   }, [messages, isAtBottom]);
 
   const handleModalOpen = () => {
-    setIsModalOpen(true);
+    setState((prevState) => ({ ...prevState, isModalOpen: true }));
   };
 
   const handleModalClose = () => {
-    setIsModalOpen(false);
+    setState((prevState) => ({ ...prevState, isModalOpen: false }));
   };
 
   const handleKeyPress = (e) => {
@@ -117,13 +120,19 @@ export default function SpaceChat() {
   };
 
   const handleDeleteModalOpen = (messageId) => {
-    setMessageToDelete(messageId);
-    setIsDeleteModalOpen(true);
+    setState((prevState) => ({
+      ...prevState,
+      messageToDelete: messageId,
+      isDeleteModalOpen: true,
+    }));
   };
 
   const handleDeleteModalClose = () => {
-    setIsDeleteModalOpen(false);
-    setMessageToDelete(null);
+    setState((prevState) => ({
+      ...prevState,
+      isDeleteModalOpen: false,
+      messageToDelete: null,
+    }));
   };
 
   const handleDeleteMessage = async () => {
@@ -133,13 +142,20 @@ export default function SpaceChat() {
           "/spaces/" +
           id +
           "/messages/" +
-          messageToDelete,
+          state.messageToDelete,
       );
-      setMessages(messages.filter((msg) => msg.id !== messageToDelete));
+      setMessages(messages.filter((msg) => msg.id !== state.messageToDelete));
       handleDeleteModalClose();
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const toggleTrashVisibility = (messageId) => {
+    setState((prevState) => ({
+      ...prevState,
+      visibleTrash: prevState.visibleTrash === messageId ? null : messageId,
+    }));
   };
 
   return (
@@ -182,14 +198,8 @@ export default function SpaceChat() {
                   ? "justify-end ml-6"
                   : "justify-start mr-6"
               } ${marginClass}`}
+              onClick={() => toggleTrashVisibility(msg.id)}
             >
-              {msg.sender.id === userData.id && (
-                <Trash
-                  size="24"
-                  className="cursor-pointer"
-                  onClick={() => handleDeleteModalOpen(msg.id)}
-                />
-              )}
               {isFirstMessageByUser && msg.sender.id !== userData.id ? (
                 <img
                   src={msg.sender.photo_url}
@@ -199,21 +209,31 @@ export default function SpaceChat() {
               ) : (
                 <div className="w-10 h-10 rounded-full mr-2" />
               )}
-              <div className="max-w-3/4">
-                {isFirstMessageByUser && (
-                  <div className="text-sm text-gray-500 mb-1">
-                    {msg.sender.id === userData.id ? "You" : msg.sender.name}
+              <div className="flex items-center max-w-3/4">
+                <div className="flex flex-col">
+                  {isFirstMessageByUser && (
+                    <div className="text-sm text-gray-500 mb-1">
+                      {msg.sender.id === userData.id ? "You" : msg.sender.name}
+                    </div>
+                  )}
+                  <div
+                    className={`p-3 rounded-lg break-words whitespace-pre-wrap ${
+                      msg.sender.id === userData.id
+                        ? "bg-accent text-textBlack"
+                        : "bg-secondary text-textBlack"
+                    }`}
+                  >
+                    {msg.content}
                   </div>
-                )}
-                <div
-                  className={`p-3 rounded-lg break-words whitespace-pre-wrap ${
-                    msg.sender.id === userData.id
-                      ? "bg-accent text-textBlack"
-                      : "bg-secondary text-textBlack"
-                  }`}
-                >
-                  {msg.content}
                 </div>
+                {msg.sender.id === userData.id &&
+                  state.visibleTrash === msg.id && (
+                    <Trash
+                      size="24"
+                      className="ml-2 cursor-pointer"
+                      onClick={() => handleDeleteModalOpen(msg.id)}
+                    />
+                  )}
               </div>
               {isFirstMessageByUser && msg.sender.id === userData.id ? (
                 <img
@@ -257,7 +277,7 @@ export default function SpaceChat() {
         </div>
       </div>
 
-      {isModalOpen && (
+      {state.isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
           <div className="bg-white p-6 m-8 rounded-lg shadow-lg w-full">
             <div className="flex justify-center mb-4">
@@ -291,7 +311,7 @@ export default function SpaceChat() {
         </div>
       )}
 
-      {isDeleteModalOpen && (
+      {state.isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
           <div className="bg-white p-6 m-8 rounded-lg shadow-lg w-full max-w-md">
             <h2 className="text-2xl font-bold text-center mb-4">
@@ -303,7 +323,7 @@ export default function SpaceChat() {
             <div className="flex justify-around">
               <button
                 onClick={handleDeleteMessage}
-                className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600"
+                className="bg-primary text-white py-2 px-4 rounded-md hover:bg-gray-400"
               >
                 Delete
               </button>
