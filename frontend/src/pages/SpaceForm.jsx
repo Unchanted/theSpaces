@@ -51,7 +51,7 @@ export default function SpaceForm() {
       <div className="bg-white p-6 rounded-lg shadow-lg w-96">
         <h2 className="text-2xl font-bold mb-4 text-gray-800">Create Space</h2>
         <form onSubmit={onSubmit}>
-          // Space Name
+          {/* Space Name */}
           <div className="mb-4">
             <label htmlFor="spaceName" className="block text-gray-700 mb-2">
               Name of Space
@@ -64,7 +64,7 @@ export default function SpaceForm() {
               required
             />
           </div>
-          // photo url
+
           <div className="mb-4">
             <label htmlFor="photoUrl" className="block text-gray-700 mb-2">
               Photo URL
@@ -77,7 +77,7 @@ export default function SpaceForm() {
               required
             />
           </div>
-          // description
+
           <div className="mb-4">
             <label htmlFor="description" className="block text-gray-700 mb-2">
               Description

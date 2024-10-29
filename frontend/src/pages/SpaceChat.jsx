@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft2, Send2, ArrowCircleDown } from "iconsax-react";
+import { ArrowLeft2, Send2, ArrowCircleDown, Trash } from "iconsax-react";
 import axios from "axios";
 import { UserDataContext } from "../contexts/userContext";
 
@@ -12,6 +12,8 @@ export default function SpaceChat() {
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [spaceDetails, setSpaceDetails] = useState({});
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [messageToDelete, setMessageToDelete] = useState(null);
 
   const chatEndRef = useRef(null);
   const chatContainerRef = useRef(null);
@@ -98,6 +100,7 @@ export default function SpaceChat() {
       scrollToBottom();
     }
   }, [messages, isAtBottom]);
+
   const handleModalOpen = () => {
     setIsModalOpen(true);
   };
@@ -110,6 +113,32 @@ export default function SpaceChat() {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
+    }
+  };
+
+  const handleDeleteModalOpen = (messageId) => {
+    setMessageToDelete(messageId);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteModalClose = () => {
+    setIsDeleteModalOpen(false);
+    setMessageToDelete(null);
+  };
+
+  const handleDeleteMessage = async () => {
+    try {
+      await axios.delete(
+        import.meta.env.VITE_SERVER_URL +
+          "/spaces/" +
+          id +
+          "/messages/" +
+          messageToDelete,
+      );
+      setMessages(messages.filter((msg) => msg.id !== messageToDelete));
+      handleDeleteModalClose();
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -154,6 +183,13 @@ export default function SpaceChat() {
                   : "justify-start mr-6"
               } ${marginClass}`}
             >
+              {msg.sender.id === userData.id && (
+                <Trash
+                  size="24"
+                  className="cursor-pointer"
+                  onClick={() => handleDeleteModalOpen(msg.id)}
+                />
+              )}
               {isFirstMessageByUser && msg.sender.id !== userData.id ? (
                 <img
                   src={msg.sender.photo_url}
@@ -251,6 +287,33 @@ export default function SpaceChat() {
             >
               Close
             </button>
+          </div>
+        </div>
+      )}
+
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
+          <div className="bg-white p-6 m-8 rounded-lg shadow-lg w-full max-w-md">
+            <h2 className="text-2xl font-bold text-center mb-4">
+              Confirm Deletion
+            </h2>
+            <p className="text-gray-600 text-center mb-4">
+              Are you sure you want to delete this message?
+            </p>
+            <div className="flex justify-around">
+              <button
+                onClick={handleDeleteMessage}
+                className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600"
+              >
+                Delete
+              </button>
+              <button
+                onClick={handleDeleteModalClose}
+                className="bg-gray-300 text-black py-2 px-4 rounded-md hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
