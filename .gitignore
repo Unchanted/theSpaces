@@ -2,3 +2,4 @@
 node_modules
 cert.crt
 private.key
+.env
