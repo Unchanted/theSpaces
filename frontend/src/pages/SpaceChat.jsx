@@ -137,15 +137,20 @@ export default function SpaceChat() {
 
   const handleDeleteMessage = async () => {
     try {
-      await axios.delete(
-        import.meta.env.VITE_SERVER_URL +
-          "/spaces/" +
-          id +
-          "/messages/" +
-          state.messageToDelete,
+      const response = await axios.get(
+        import.meta.env.VITE_SERVER_URL + "/spaces/" + id + "/messages/delete",
+        {
+          params: {
+            message_id: state.messageToDelete,
+          },
+        }
       );
-      setMessages(messages.filter((msg) => msg.id !== state.messageToDelete));
+
+      // setMessages(messages.filter((msg) => msg.id !== state.messageToDelete));
       handleDeleteModalClose();
+      if (response.status !== 200) {
+        throw new Error("Failed to delete message");
+      }
     } catch (error) {
       console.error(error);
     }
