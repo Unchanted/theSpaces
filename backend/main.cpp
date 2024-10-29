@@ -162,6 +162,30 @@ public:
         this->lastMessage = message;
     }
 
+    void deleteMessage(int id)
+    {
+        Message *currentMessage = this->lastMessage;
+        Message *previousMessage = nullptr;
+        while (currentMessage != nullptr)
+        {
+            if (currentMessage->getId() == id)
+            {
+                if (previousMessage != nullptr)
+                {
+                    previousMessage->setPreviousMessage(currentMessage->getPreviousMessage());
+                }
+                else
+                {
+                    this->lastMessage = currentMessage->getPreviousMessage();
+                }
+                delete currentMessage; // free memory
+                return;
+            }
+            previousMessage = currentMessage;
+            currentMessage = currentMessage->getPreviousMessage();
+        }
+    }
+
     crow::json::wvalue to_json() const
     {
         crow::json::wvalue space_json;
@@ -399,6 +423,21 @@ int main()
         crow::json::wvalue response_json;
         response_json["message"] = message->to_json();
         return crow::response(response_json); });
+
+    CROW_ROUTE(app, "/spaces/<int>/messages/delete")
+    ([](const crow::request &req, int space_id)
+     {
+        std::string messageIdString = req.url_params.get("message_id");
+        int messageId = std::stoi(messageIdString);
+        Space* space = getSpaceById(space_id);
+        if (!space)
+        {
+            return crow::response(crow::status::NOT_FOUND);
+        }
+
+        space->deleteMessage(messageId);
+
+        return crow::response(crow::status::OK); });
 
     app.port(8080).multithreaded().run();
 }
