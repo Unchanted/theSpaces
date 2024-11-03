@@ -25,7 +25,7 @@ export default function FooterNav() {
   return (
     <div className="h-20 fixed bottom-0 left-0 w-full flex flex-row justify-around pt-3 z-10 shadow-2xl bg-background">
       <NavbarItem Icon={Home} text="My Spaces" to="/" />
-      <NavbarItem Icon={Box1} text="Space List" to="/spaces" />
+      <NavbarItem Icon={Box1} text="SpaceList" to="/spaces" />
       <NavbarItem Icon={Message} text="Gupshup AI" to="/gupshup" />
       <Link
         to="/spaces/create"
