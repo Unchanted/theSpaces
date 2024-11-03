@@ -10,7 +10,11 @@ export default function CreateSpace() {
 
   return (
     <div className="flex flex-col items-center">
-      <img src={CreateSpaceIcon} alt="Create Space Icon" className="mb-4" />
+      <img
+        src={CreateSpaceIcon}
+        alt="Create Space Icon"
+        className="mb-4 max-w-sm"
+      />
       <div className="flex items-center">
         <button
           className="px-4 py-2 bg-primary text-textWhite font-bold rounded-2xl hover:bg-red-700"

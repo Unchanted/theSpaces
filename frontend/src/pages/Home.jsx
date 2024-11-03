@@ -12,7 +12,7 @@ export default function Home() {
     const fetchSpaces = async () => {
       try {
         const response = await axios.get(
-          import.meta.env.VITE_SERVER_URL + "/users/" + userData.id + "/spaces"
+          import.meta.env.VITE_SERVER_URL + "/users/" + userData.id + "/spaces",
         );
         setSpaces(response.data);
         console.log(response.data);
