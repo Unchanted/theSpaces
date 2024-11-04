@@ -2,7 +2,7 @@ import CreateSpaceIcon from "../assets/CreateSpace.svg";
 
 function Gupshup() {
   return (
-    <div className="flex flex-col items-center bg-background h-screen">
+    <div className="flex flex-col items-center bg-background min-h-screen">
       <img
         src={CreateSpaceIcon}
         alt="Create Space Icon"

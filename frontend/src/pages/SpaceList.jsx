@@ -31,7 +31,7 @@ export default function SpaceList() {
         params: {
           user_id: userData.id,
         },
-      }
+      },
     );
 
     const data = response.data;
@@ -51,7 +51,7 @@ export default function SpaceList() {
     const fetchSpaces = async () => {
       try {
         const response = await fetch(
-          import.meta.env.VITE_SERVER_URL + "/spaces"
+          import.meta.env.VITE_SERVER_URL + "/spaces",
         );
         const data = await response.json();
         setSpaces(data);
@@ -63,13 +63,15 @@ export default function SpaceList() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-start h-screen gap-4 p-4 bg-background">
-      <h1 className="text-3xl font-bold text-primary mb-4 flex justify-start">All Spaces</h1>
+    <div className="flex flex-col items-center justify-start min-h-screen gap-4 p-4 bg-background mb-20">
+      <h1 className="text-3xl font-bold text-primary mb-4 flex justify-start">
+        All Spaces
+      </h1>
       {spaces.map((space) => (
         <div
           key={space.id}
           onClick={() => handleCardClick(space)}
-          className="flex items-center border rounded-lg shadow-md p-4 mb-4 w-full max-w-lg cursor-pointer hover:bg-gray-100"
+          className="flex items-center border rounded-lg shadow-md p-4 mb-1 w-full max-w-lg cursor-pointer hover:bg-gray-100"
         >
           <div className="w-1/4">
             <img

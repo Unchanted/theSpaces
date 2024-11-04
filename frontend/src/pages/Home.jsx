@@ -24,7 +24,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex flex-col bg-background items-center justify-start h-screen gap-4 p-4">
+    <div className="flex flex-col bg-background items-center justify-start min-h-screen gap-4 p-4 mb-20">
       <div className="absolute top-4 left-4">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary whitespace-pre-line">
           Welcome, {"\n"}
